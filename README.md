@@ -3,7 +3,7 @@ Pet project for itechart intership
 
 # Prerequisites
 
-- [Docker](https://docs.docker.com/docker-for-mac/install/)
+- [Docker](https://www.docker.com/)
 
 # Initialize the project
 

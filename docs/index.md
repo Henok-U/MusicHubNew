@@ -4,7 +4,7 @@ A new Music Hub Project. Check out the project's [documentation](https://github.
 
 # Prerequisites
 
-- [Docker](https://docs.docker.com/docker-for-mac/install/)
+- [Docker](https://www.docker.com/)
 
 # Initialize the project
 

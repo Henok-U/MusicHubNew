@@ -1,17 +1,15 @@
-# Welcome to MkDocs
+# Music Hub Project
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+A new Music Hub Project. Check out the project's [documentation](https://github.com/Henok-U/MusicHubNew).
 
-## Commands
+# Prerequisites
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+- [Docker](https://docs.docker.com/docker-for-mac/install/)
 
-## Project layout
+# Initialize the project
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+Start the postgres container for local development:
+
+```bash
+docker-compose up
+```

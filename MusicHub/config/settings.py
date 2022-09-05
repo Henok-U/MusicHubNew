@@ -156,10 +156,69 @@ class Common(Configuration):
             "rest_framework.renderers.BrowsableAPIRenderer",
         ),
         "DEFAULT_PERMISSION_CLASSES": [
-            "rest_framework.permissions.IsAuthenticated",
+            "rest_framework.permissions.AllowAny",
         ],
         "DEFAULT_AUTHENTICATION_CLASSES": (
             "rest_framework.authentication.SessionAuthentication",
             "rest_framework.authentication.TokenAuthentication",
         ),
+    }
+
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "django.server": {
+                "()": "django.utils.log.ServerFormatter",
+                "format": "[%(server_time)s] %(message)s",
+            },
+            "verbose": {
+                "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
+            },
+            "simple": {"format": "%(levelname)s %(message)s"},
+        },
+        # "filters": {
+        #     "require_debug_true": {
+        #         "()": "django.utils.log.RequireDebugTrue",
+        #     },
+        # },
+        "handlers": {
+            "django.server": {
+                "level": "INFO",
+                "class": "logging.StreamHandler",
+                "formatter": "django.server",
+            },
+            "file": {
+                "level": "INFO",
+                "class": "logging.FileHandler",
+                "filename": "general.log",
+                "formatter": "simple",
+            },
+            "file_error": {
+                "level": "ERROR",
+                "class": "logging.FileHandler",
+                "filename": "error.log",
+                "formatter": "verbose",
+            },
+        },
+        "loggers": {
+            "django": {
+                "handlers": ["django.server", "file", "file_error"],
+                "propagate": True,
+            },
+            "django.server": {
+                "handlers": ["django.server", "file", "file_error"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            "django.request": {
+                "handlers": ["django.server", "file", "file_error"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            "django.db.backends": {
+                "handlers": ["django.server", "file", "file_error"],
+                "level": "INFO",
+            },
+        },
     }

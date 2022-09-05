@@ -15,3 +15,9 @@ coverage== 6.4.4
 
 #Database Connection
 psycopg2==2.9.3
+
+#image
+pillow==9.2.0
+
+
+

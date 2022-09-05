@@ -170,7 +170,7 @@ class Common(Configuration):
         "formatters": {
             "django.server": {
                 "()": "django.utils.log.ServerFormatter",
-                "format": "[%(server_time)s] %(message)s",
+                "format": "[%(asctime)s] %(message)s",
             },
             "verbose": {
                 "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"

@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from users.models import User
-from users.custom_storage import MediaStorage
+from MusicHub.users.models import User
+from MusicHub.users.custom_storage import MediaStorage
 
-@api_view['GET']
+@api_view(['GET'])
 def is_server_working(request):
     try:
         User.object.all()
@@ -17,4 +17,3 @@ def is_server_working(request):
         return Response(status=404, data={"Error while connecting to S3 storage"})
     except Exception as e:
             return Response(status=500, data={"Error while connecting to database"})
-    

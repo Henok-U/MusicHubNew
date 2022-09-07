@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from main.views import is_server_working
+from MusicHub.main.views import is_server_working
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('test/', is_server_working)

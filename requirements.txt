@@ -1,6 +1,7 @@
 #Django 
 Django==4.1
 django-configurations==2.4
+
 #Django Rest Framework
 djangorestframework==3.13.1
 Markdown==3.3.7
@@ -18,6 +19,11 @@ psycopg2==2.9.3
 
 #image
 pillow==9.2.0
+
+#production server
+django-storages==1.13.1
+boto3==1.24.61
+gunicorn==20.1.0
 
 
 

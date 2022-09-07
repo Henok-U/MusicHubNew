@@ -50,6 +50,7 @@ class Common(Configuration):
         "django_filters",
         # apps
         "MusicHub.users",
+        "MusicHub.main",
     ]
 
     MIDDLEWARE = [

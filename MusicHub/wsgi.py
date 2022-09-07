@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/4.1/howto/deployment/wsgi/
 
 import os
 
-from django.core.wsgi import get_wsgi_application
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MusicHub.config")
+os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MusicHub.settings')
-
+from configurations.wsgi import get_wsgi_application  # noqa
 application = get_wsgi_application()

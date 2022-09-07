@@ -16,4 +16,4 @@ def is_server_working(request):
     except FileNotFoundError:
         return Response(status=404, data={"Error while connecting to S3 storage"})
     except Exception as e:
-            return Response(status=500, data={"Error while connecting to database"})
+            return Response(status=500, data=str(e))

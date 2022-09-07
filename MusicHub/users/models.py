@@ -29,12 +29,13 @@ class CustomManager(BaseUserManager):
         user.set_password(password)
         user.is_admin = True
         user.is_staff = True
+        user.is_superuser = True
         user.save(using=self._db)
 
         return user
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     """Custom Abstract User Model"""
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)

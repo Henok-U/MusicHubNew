@@ -1,7 +1,11 @@
 # MuiscHubNew
+
 Pet project for itechart intership
 
- Visit production [server](http://3.71.253.142/).
+Check out full [documentation](https://musichubnew.readthedocs.io/en/latest/)
+
+Visit production [server](http://3.71.253.142/).
+
 # Prerequisites
 
 - [Docker](https://www.docker.com/)
@@ -15,6 +19,7 @@ WINDOWS:
 ```bash
 docker-compose up
 ```
+
 Create virtual enviroment and install requirements:
 
 ```bash
@@ -22,6 +27,7 @@ python -m venv env
 env\Scripts\activate
 pip install -r requirements.txt
 ```
+
 Make migrations and create super user
 
 ```bash

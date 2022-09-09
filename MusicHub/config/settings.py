@@ -163,6 +163,7 @@ class Common(Configuration):
             "rest_framework.authentication.SessionAuthentication",
             "rest_framework.authentication.TokenAuthentication",
         ),
+        "EXCEPTION_HANDLER": "MusicHub.main.exception_handler.custom_exception_handler"
     }
 
     LOGGING = {

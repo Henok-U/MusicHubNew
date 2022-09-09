@@ -74,11 +74,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         ],
     )  # required
     password = models.CharField(
-        max_length=100,
+        max_length=100,  # this is for hash stored in database
         validators=[
             RegexValidator(
-                regex="^[a-zA-Z\d!@#$&*][a-zA-Z\d!@#$&*]{8,64}$",
-                message="Password must be beetween 8-64 characters and can include Upper/lower cases, digits and  '!@#$&*' signs",
+                regex="^.{8,64}$",
+                message="Password must be beetween 8-64 characters and can include Upper/lower cases, digits and special characters",
             )
         ],
     )

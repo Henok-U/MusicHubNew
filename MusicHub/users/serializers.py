@@ -2,7 +2,7 @@ from dataclasses import field
 from rest_framework import serializers
 
 from .models import User
-from ..main.utlis import trim_spaces_from_data
+from ..main.utils import trim_spaces_from_data
 
 
 class CreateUserSerializer(serializers.ModelSerializer):

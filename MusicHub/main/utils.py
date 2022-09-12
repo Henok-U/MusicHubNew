@@ -10,3 +10,9 @@ def send_email(subject: str, message: str, to_email: List[str]) -> None:
         recipient_list=to_email,
         fail_silently=False,
     )
+
+
+def trim_spaces_from_data(data):
+    for key, value in data.items():
+        data[key] = " ".join(value.split())
+    return data

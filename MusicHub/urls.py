@@ -14,9 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from MusicHub.main.views import is_server_working
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('test/', is_server_working)
+    path('test/', is_server_working),
+    path('user/', include('MusicHub.users.urls'))
 ]

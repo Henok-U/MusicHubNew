@@ -1,3 +1,4 @@
+from email import message
 from uuid import uuid4
 from django.db import models
 from django.core.validators import (
@@ -40,19 +41,48 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)
 
-    first_name = models.CharField(max_length=25, blank=False, null=False)
-    last_name = models.CharField(max_length=25, blank=False, null=False)
+    first_name = models.CharField(
+        max_length=30,
+        blank=False,
+        null=False,
+        validators=[
+            RegexValidator(
+                "^[a-zA-Z][a-zA-Z\-\s]*",
+                message="Name not valid: name must start and ends with letter and can contain only ' ' or '-' special characters ",
+            )
+        ],
+    )
+    last_name = models.CharField(
+        max_length=30,
+        blank=False,
+        null=False,
+        validators=[
+            RegexValidator(
+                "^[a-zA-Z][a-zA-Z\-\s]*",
+                message="Name not valid: name must start and ends with letter and can contain only ' ' or '-' special characters ",
+            )
+        ],
+    )
     email = models.EmailField(
         verbose_name="email address",
         unique=True,
-        validators=[EmailValidator(code="Invalid email")],
+        max_length=256,
+        validators=[
+            EmailValidator(
+                code="Invalid email", message="Please provide valid email address"
+            )
+        ],
     )  # required
     password = models.CharField(
-        max_length=100,
+        max_length=100,  # this is for hash stored in database
         validators=[
-            RegexValidator(regex="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\W).{8,}$")
+            RegexValidator(
+                regex="^.{8,64}$",
+                message="Password must be beetween 8-64 characters and can include Upper/lower cases, digits and special characters",
+            )
         ],
     )
+
     profile_avatar = models.ImageField(
         "Avatar",
         upload_to="users/avatar",

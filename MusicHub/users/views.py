@@ -9,6 +9,7 @@ from ..main.exception_handler import CustomUserException
 class CreateUserView(CreateAPIView):
 
     permission_classes = [permissions.AllowAny]
+    serializer_class = CreateUserSerializer
 
     def create(self, request, *args, **kwargs):
 

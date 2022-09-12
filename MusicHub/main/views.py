@@ -4,16 +4,24 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from MusicHub.users.models import User
 from MusicHub.users.custom_storage import MediaStorage
+from .utils import send_email
 import os
-@api_view(['GET'])
+
+
+@api_view(["GET"])
 @parser_classes([JSONParser])
 def is_server_working(request):
-    variant = os.getenv('DJANGO_CONFIGURATION')
+    variant = os.getenv("DJANGO_CONFIGURATION")
     try:
         User.objects.all()
-        if variant == 'Production':
+        send_email(
+            "Test message",
+            "This is test message",
+            ["Damian.Bednarek@itechart-group.com"],
+        )
+        if variant == "Production":
             media_storage = MediaStorage()
-            media_storage.open('diagnostic/gandalf.jpg')
+            media_storage.open("diagnostic/gandalf.jpg")
         return Response(status=200, data="Everything looks good!")
     except Exception as e:
-            return Response(status=500, data=str(e))
+        return Response(status=500, data=str(e))

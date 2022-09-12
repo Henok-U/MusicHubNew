@@ -223,3 +223,7 @@ class Common(Configuration):
             },
         },
     }
+    EMAIL_HOST = "smtp.sendgrid.net"
+    EMAIL_PORT = "587"
+    EMAIL_HOST_USER = "apikey"
+    EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_KEY")

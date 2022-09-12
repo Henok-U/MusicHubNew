@@ -16,6 +16,8 @@ class CreateUserView(CreateAPIView):
         queryset = User.objects.filter(email=request.data["email"])
         if queryset.exists():
             raise CustomUserException("Provided email address is already in use")
+        if not "confirm_password" in request.data.keys():
+            raise CustomUserException("Confirm password field is required")
         if not request.data["password"] == request.data["confirm_password"]:
             raise CustomUserException("Passwords does not match")
 

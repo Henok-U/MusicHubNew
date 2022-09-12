@@ -1,13 +1,16 @@
+from enum import auto
 from django.shortcuts import render
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
+from drf_yasg.utils import swagger_auto_schema
 from MusicHub.users.models import User
 from MusicHub.users.custom_storage import MediaStorage
 from .utils import send_email
 import os
 
 
+@swagger_auto_schema(method="get", auto_schema=None)
 @api_view(["GET"])
 @parser_classes([JSONParser])
 def is_server_working(request):

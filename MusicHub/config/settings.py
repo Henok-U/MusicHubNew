@@ -48,6 +48,7 @@ class Common(Configuration):
         # Third party apps
         "rest_framework",
         "django_filters",
+        "drf_yasg",
         # apps
         "MusicHub.users",
         "MusicHub.main",
@@ -163,7 +164,7 @@ class Common(Configuration):
             "rest_framework.authentication.SessionAuthentication",
             "rest_framework.authentication.TokenAuthentication",
         ),
-        "EXCEPTION_HANDLER": "MusicHub.main.exception_handler.custom_exception_handler"
+        "EXCEPTION_HANDLER": "MusicHub.main.exception_handler.custom_exception_handler",
     }
 
     LOGGING = {

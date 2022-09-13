@@ -14,13 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from MusicHub.main.views import is_server_working
-
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-
+from MusicHub.users.views import exchange_token, get_google_sign_link
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -48,4 +47,7 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     path("redoc", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    re_path(r"^auth/", include("drf_social_oauth2.urls", namespace="drf")),
+    path("social/<str:backend>/", exchange_token),
+    path("social-get/", get_google_sign_link),
 ]

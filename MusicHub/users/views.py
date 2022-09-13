@@ -63,7 +63,7 @@ def exchange_token(request, backend):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([permissions.AllowAny])
 def get_google_sign_link(request):
     return Response(
         data=f"https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fsocial%2Fgoogle-oauth2%2F&response_type=code&client_id=VlkYq8bqToZpMFW3omBJFUw6YVyzVxwvXBYndiyI&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile"

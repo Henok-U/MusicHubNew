@@ -1,7 +1,8 @@
-from django.conf import settings
-import django.core.validators
-from django.db import migrations, models
 import uuid
+
+import django.core.validators
+from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):

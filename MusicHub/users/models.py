@@ -1,16 +1,16 @@
-from email import message
 from uuid import uuid4
-from django.db import models
-from django.core.validators import (
-    RegexValidator,
-    EmailValidator,
-    validate_image_file_extension,
-)
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+from django.core.validators import (
+    EmailValidator,
+    RegexValidator,
+    validate_image_file_extension,
+)
+from django.db import models
 
 
 class CustomManager(BaseUserManager):

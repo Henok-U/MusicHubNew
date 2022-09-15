@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
 import os
 from os.path import join
-from distutils.util import strtobool
+from pathlib import Path
+
 from configurations import Configuration
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -49,9 +49,7 @@ class Common(Configuration):
         "rest_framework",
         "django_filters",
         "drf_yasg",
-        "oauth2_provider",
         "social_django",
-        "drf_social_oauth2",
         # apps
         "MusicHub.users",
         "MusicHub.main",
@@ -166,7 +164,6 @@ class Common(Configuration):
             "rest_framework.permissions.AllowAny",
         ],
         "DEFAULT_AUTHENTICATION_CLASSES": (
-            "oauth2_provider.contrib.rest_framework.OAuth2Authentication",  # django-oauth-toolkit >= 1.0.0
             "drf_social_oauth2.authentication.SocialAuthentication",
         ),
         "EXCEPTION_HANDLER": "MusicHub.main.exception_handler.custom_exception_handler",
@@ -174,32 +171,13 @@ class Common(Configuration):
     AUTHENTICATION_BACKENDS = (
         # Google OAuth2
         "social_core.backends.google.GoogleOAuth2",
-        "drf_social_oauth2.backends.DjangoOAuth2",
         "django.contrib.auth.backends.ModelBackend",
     )
     SOCIAL_AUTH_PIPELINE = (
         "social_core.pipeline.social_auth.social_details",
         "social_core.pipeline.social_auth.social_uid",
-        "social_core.pipeline.social_auth.auth_allowed",
-        "social_core.pipeline.social_auth.social_user",
-        "social_core.pipeline.user.get_username",
-        "social_core.pipeline.social_auth.associate_by_email",
-        "social_core.pipeline.user.create_user",
-        "social_core.pipeline.social_auth.associate_user",
-        "social_core.pipeline.social_auth.load_extra_data",
-        "social_core.pipeline.user.user_details",
+        "MusicHub.main.utils.create_or_return_user",
     )
-    # Google configuration
-    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
-        "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"
-    )
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "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"
-
-    # Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-    ]
 
     LOGGING = {
         "version": 1,
@@ -259,7 +237,9 @@ class Common(Configuration):
             },
         },
     }
+    # Email provider
     EMAIL_HOST = "smtp.sendgrid.net"
     EMAIL_PORT = "587"
     EMAIL_HOST_USER = "apikey"
     EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_KEY")
+    EMAIL = "musichub.itechart@gmail.com"

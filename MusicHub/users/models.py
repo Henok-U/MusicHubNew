@@ -19,8 +19,6 @@ class CustomManager(BaseUserManager):
         """
         Creates and saves a User with a given email and password.
         """
-        if not email:
-            raise ValueError("User must provide an email address")
         user = self.model(
             email=email, first_name=first_name, last_name=last_name, **kwargs
         )
@@ -41,14 +39,8 @@ class CustomManager(BaseUserManager):
 
         return user
 
-
-class CustomVerifiedUserManager(EmailUserManager):
     def get_queryset(self):
-        return (
-            super(CustomVerifiedUserManager, self)
-            .get_queryset()
-            .filter(is_verified=True)
-        )
+        return super(CustomManager, self).get_queryset().filter(is_verified=True)
 
 
 class User(EmailAbstractUser):

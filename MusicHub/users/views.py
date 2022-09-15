@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
 from rest_framework import permissions
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from .models import User
 from .serializers import UserSerializer, CreateUserSerializer
 from ..main.exception_handler import CustomUserException
@@ -9,6 +11,7 @@ from authemail.models import SignupCode
 from authemail.views import SignupVerify
 from MusicHub.main.utils import verification_email
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 
 
 class CreateUserView(CreateAPIView):
@@ -41,13 +44,27 @@ class CreateUserView(CreateAPIView):
         model_serializer = UserSerializer(data=serializer.data)
         model_serializer.is_valid(raise_exception=True)
         user = model_serializer.save()
-
-        verification_email(user, request)
+        try:
+            verification_email(user, request)
+        except Exception:
+            raise CustomUserException("Error during sending email.")
 
         return Response(status=200, data=model_serializer.data)
 
 
-# @method_decorator()
+@method_decorator(
+    name="get",
+    decorator=swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "code",
+                openapi.IN_QUERY,
+                description="Successful verification\nOnly works with token appended at the end of the url as ?code=<token>",
+                type=openapi.TYPE_STRING,
+            ),
+        ]
+    ),
+)
 class SignUVerify(SignupVerify):
     def get(self, request, format=None):
         code = request.GET.get("code", "")

@@ -6,7 +6,6 @@ from drf_yasg.utils import swagger_auto_schema
 from .models import User
 from .serializers import UserSerializer, CreateUserSerializer
 from ..main.exception_handler import CustomUserException
-from MusicHub.users import serializers
 from authemail.models import SignupCode
 from authemail.views import SignupVerify
 from MusicHub.main.utils import verification_email
@@ -59,13 +58,13 @@ class CreateUserView(CreateAPIView):
             openapi.Parameter(
                 "code",
                 openapi.IN_QUERY,
-                description="Successful verification\nOnly works with token appended at the end of the url as ?code=<token>",
+                description="Successful verification\nGET api/accounts/signup/verify/?code=<token>",
                 type=openapi.TYPE_STRING,
             ),
         ]
     ),
 )
-class SignUVerify(SignupVerify):
+class CreateUserVerify(SignupVerify):
     def get(self, request, format=None):
         code = request.GET.get("code", "")
         try:

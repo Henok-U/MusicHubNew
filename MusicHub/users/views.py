@@ -1,4 +1,3 @@
-from typing_extensions import dataclass_transform
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
 from rest_framework import permissions
@@ -52,7 +51,10 @@ class CreateUserView(CreateAPIView):
 class SignUVerify(SignupVerify):
     def get(self, request, format=None):
         code = request.GET.get("code", "")
-        signup_code = SignupCode.objects.get(code=code)
+        try:
+            signup_code = SignupCode.objects.get(code=code)
+        except SignupCode.DoesNotExist:
+            raise CustomUserException("Verification code is not a valid code")
         now = timezone.now()
         diff = now - signup_code.created_at
 

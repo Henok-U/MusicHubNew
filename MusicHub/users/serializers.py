@@ -1,7 +1,5 @@
-from dataclasses import field
-from enum import unique
 from rest_framework import serializers
-
+from django.core.validators import EmailValidator
 from .models import User
 from ..main.utils import trim_spaces_from_data
 
@@ -29,4 +27,30 @@ class CreateUserSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=8, max_length=64, allow_blank=False)
     confirm_password = serializers.CharField(
         min_length=8, max_length=64, allow_blank=False
+    )
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    confirm_password = serializers.CharField(
+        max_length=100,
+    )
+
+    class Meta:
+        model = User
+        fields = ["password", "confirm_password"]
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "confirm_password": {"write_only": True},
+        }
+
+
+class ResetPasswordEmailSerializer(serializers.Serializer):
+
+    email = serializers.CharField(
+        max_length=256,
+        validators=[
+            EmailValidator(
+                code="Invalid email", message="Please provide valid email address"
+            )
+        ],
     )

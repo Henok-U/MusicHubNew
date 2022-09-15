@@ -35,11 +35,12 @@ class CustomManager(BaseUserManager):
         user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
+        user.is_verified = True
         user.save(using=self._db)
 
         return user
 
-    def get_queryset(self):
+    def get_queryset_verified(self):
         return super(CustomManager, self).get_queryset().filter(is_verified=True)
 
 

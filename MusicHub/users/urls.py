@@ -1,15 +1,7 @@
 from django.urls import path
 
-
-from .views import (
-    SignUpVerifyView,
-    SignInView,
-    SignOutView,
-    SignUpView,
-    RecoverPassword,
-    exchange_token,
-)
-
+from .views import (RecoverPassword, SignInView, SignOutView, SignUpVerifyView,
+                    SignUpView, exchange_token)
 
 urlpatterns = [
     path("signup/", SignUpView.as_view(), name="signup"),

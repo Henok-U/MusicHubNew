@@ -1,8 +1,8 @@
 from rest_framework import status
-from rest_framework.test import APITestCase
-from django.urls import reverse
-from MusicHub.users.models import User
 from rest_framework.authtoken.models import Token as SigninToken
+from rest_framework.test import APITestCase
+
+from MusicHub.users.models import User
 
 
 class TestUserSignInGoogleAPIView(APITestCase):

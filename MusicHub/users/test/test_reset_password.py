@@ -1,16 +1,12 @@
-import email
-from time import time
-from urllib import response
-from django.utils import timezone
-from rest_framework import status
-from rest_framework.test import APITestCase, APIRequestFactory
-from django.urls import reverse
-from authemail.models import SignupCode
-from MusicHub.users.models import User
-from faker import Faker
-from .user_factory import UserFactory
-import factory
 from authemail.models import PasswordResetCode
+from django.urls import reverse
+from django.utils import timezone
+from faker import Faker
+from rest_framework.test import APITestCase
+
+from MusicHub.users.models import User
+
+from .user_factory import UserFactory
 
 fake = Faker()
 

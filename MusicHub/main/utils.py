@@ -1,15 +1,14 @@
-from django.utils import timezone
-
 from typing import List
-from authemail.models import SignupCode, PasswordResetCode
-from rest_framework.authtoken.models import Token as SigninToken
-from .exception_handler import CustomUserException
 
+from authemail.models import PasswordResetCode, SignupCode
 from django.core.mail import send_mail
+from django.utils import timezone
+from rest_framework.authtoken.models import Token as SigninToken
 
 from MusicHub.config.settings import Common
-from MusicHub.main.exception_handler import CustomUserException
 from MusicHub.users.models import User
+
+from .exception_handler import CustomUserException
 
 
 def send_email(subject: str, message: str, to_email: List[str]) -> None:

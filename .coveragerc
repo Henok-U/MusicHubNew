@@ -6,5 +6,6 @@ omit = *migrations*,
        *admin*,
        ./manage.py,
        ./MusicHub/config/*,
+       ./MusicHub/main/views.py,
        ./MusicHub/wsgi.py,
        *__init__*

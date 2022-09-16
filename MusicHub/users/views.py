@@ -29,6 +29,15 @@ from .serializers import (
     ResetPasswordEmailSerializer,
 )
 
+from social_core.exceptions import AuthForbidden
+
+
+from ..main.exception_handler import CustomUserException
+from .models import User
+from .serializers import CreateUserSerializer, SocialAuthSerializer, UserSerializer
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 
 class SignUpView(CreateAPIView):
 
@@ -210,3 +219,41 @@ class RecoverPassword(GenericAPIView):
             raise CustomUserException("Unable to change user password")
 
         return Response(status=200, data="Password was successfully changed")
+
+
+@swagger_auto_schema(
+    method="post",
+    request_body=SocialAuthSerializer,
+    responses={200: "token"},
+)
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+@psa()
+def exchange_token(request, backend):
+    """View to exchange google API token for application authorization token
+        If no user is associated with google token data, user will be created
+        {backend} path should be set to 'google-oauth2'
+
+    Args:
+        request (Request): request
+        backend (str): backend used for authorization, in this case - google-oauth2
+
+    Raises:
+        CustomUserException: returns response 400 Bad request with message
+
+    Returns:
+        Response: 200 with token for authorization
+    """
+
+    if not backend == "google-oauth2":
+        raise CustomUserException("Given backend provider is not valid")
+
+    serializer = SocialAuthSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        try:
+            user = request.backend.do_auth(request.data["access_token"])
+        except AuthForbidden as e:
+            raise CustomUserException(str(e))
+        # todo create token for user and return
+        token = "test"
+        return Response(status=200, data=token)

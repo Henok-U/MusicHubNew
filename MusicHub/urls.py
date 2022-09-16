@@ -24,7 +24,7 @@ from django.urls import path, include
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="DRF USER REGISTRATION API",
+        title="MusicHub API docs",
         default_version="v1",
         description="User Registration and authentication",
         terms_of_service="https://www.google.com/policies/terms/",

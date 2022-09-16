@@ -1,22 +1,34 @@
-from django.core.mail import send_mail
 from django.utils import timezone
+
 from typing import List
 from authemail.models import SignupCode, PasswordResetCode
 from rest_framework.authtoken.models import Token as SigninToken
 from .exception_handler import CustomUserException
 
+from django.core.mail import send_mail
+
+from MusicHub.config.settings import Common
+from MusicHub.main.exception_handler import CustomUserException
+from MusicHub.users.models import User
+
 
 def send_email(subject: str, message: str, to_email: List[str]) -> None:
+    """
+    Send email from musichub email address to subject or list of subjects
+    """
     send_mail(
         subject=subject,
         message=message,
-        from_email="musichub.itechart@gmail.com",
+        from_email=Common.EMAIL,
         recipient_list=to_email,
         fail_silently=False,
     )
 
 
-def trim_spaces_from_data(data):
+def trim_spaces_from_data(data: str) -> str:
+    """
+    trim all whitespace characters from given string
+    """
     for key, value in data.items():
         data[key] = " ".join(value.split())
     return data
@@ -69,3 +81,25 @@ def check_sigin_code(code: str, objectModel: SigninToken) -> str:
         raise CustomUserException("Token has expired.")
 
     return verification_code
+
+
+def create_or_return_user(backend, response, *args, **kwargs):
+    """Pipeline for social authentication
+        responsible for creating new user or returning existing one
+
+    Returns:
+        User: created or pulled from database user
+    """
+
+    users = User.objects.filter(email=response["sub"])
+    if users.exists():
+        return users.get()
+    # Todo return sign in token
+    else:
+        user = User.objects.create_user(
+            email=response["sub"],
+            first_name=response["given_name"],
+            last_name=response["family_name"],
+            password="",
+        )  # todo return sign in token
+        return user

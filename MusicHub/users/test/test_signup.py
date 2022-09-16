@@ -94,6 +94,7 @@ class TestUserRegistrationAPIView(APITestCase):
         self.assertEqual(user.is_verified, False)
         verify_token = SignupCode.objects.get(user=user)
         response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
+
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -113,7 +114,9 @@ class TestUserRegistrationAPIView(APITestCase):
         verify_token = SignupCode.objects.get(user=user)
         verify_token.created_at = timezone.now() - timezone.timedelta(days=2)
         verify_token.save()
+
         response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
+
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, False)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -130,7 +133,9 @@ class TestUserRegistrationAPIView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, False)
+
         response = self.client.get(f"/api/user/signup/verify/?code=somenotvalidcode")
+
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, False)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from MusicHub.main.views import is_server_working
-from MusicHub.users.views import CreateUserVerify
+
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -39,8 +39,6 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path("api/accounts/", include("authemail.urls")),
-    # path("user/create/verify/", CreateUserVerify.as_view()),
     path("api/test/", is_server_working),
     path("api/user/", include("MusicHub.users.urls")),
     # swagger api doc paths

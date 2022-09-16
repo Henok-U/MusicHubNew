@@ -1,6 +1,8 @@
 from django.core.mail import send_mail
+from django.utils import timezone
 from typing import List
-from authemail.models import SignupCode
+from authemail.models import SignupCode, PasswordResetCode
+from .exception_handler import CustomUserException
 
 
 def send_email(subject: str, message: str, to_email: List[str]) -> None:
@@ -24,6 +26,31 @@ def verification_email(user, request):
     signup_code = SignupCode.objects.create_signup_code(user, ipaddr)
     send_email(
         subject="Verify email account: ",
-        message=f"http://localhost:8000/api/accounts/signup/verify/?code={signup_code}",
+        message=f"http://localhost:8000/api/user/create/verify/?code={signup_code}",
         to_email=[user.email],
     )
+
+
+def reset_password_email(user, request):
+    reset_code = PasswordResetCode.objects.create_password_reset_code(user)
+    send_email(
+        subject="Reset account password link: ",
+        message=f"http://localhost:8000/api/user/reset-password/?code={reset_code}",
+        to_email=[user.email],
+    )
+
+
+def check_code_for_verification(
+    code: str, objectModel: SignupCode | PasswordResetCode
+) -> str:
+    try:
+        verifiation_code = objectModel.objects.get(code=code)
+    except objectModel.DoesNotExist:
+        raise CustomUserException("Verification code is not a valid code")
+    now = timezone.now()
+    diff = now - verifiation_code.created_at
+
+    if diff.days * 24 > 24:
+        raise CustomUserException("Token has expired.")
+
+    return verifiation_code

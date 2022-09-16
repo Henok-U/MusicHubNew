@@ -1,16 +1,25 @@
 from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView
 from rest_framework import permissions
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
 from .models import User
-from .serializers import UserSerializer, CreateUserSerializer
-from ..main.exception_handler import CustomUserException
-from authemail.models import SignupCode
+from .serializers import (
+    UserSerializer,
+    CreateUserSerializer,
+    ResetPasswordSerializer,
+    ResetPasswordEmailSerializer,
+)
+from ..main.exception_handler import CustomUserException, custom_exception_handler
+from MusicHub.main.utils import check_code_for_verification
+from authemail.models import SignupCode, PasswordResetCode
+
 from authemail.views import SignupVerify
-from MusicHub.main.utils import verification_email
+from MusicHub.main.utils import verification_email, reset_password_email
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 class CreateUserView(CreateAPIView):
@@ -67,25 +76,81 @@ class CreateUserView(CreateAPIView):
 class CreateUserVerify(SignupVerify):
     def get(self, request, format=None):
         code = request.GET.get("code", "")
+        verification_code = check_code_for_verification(code, SignupCode)
         try:
-            signup_code = SignupCode.objects.get(code=code)
-        except SignupCode.DoesNotExist:
-            raise CustomUserException("Verification code is not a valid code")
-        now = timezone.now()
-        diff = now - signup_code.created_at
 
-        if diff.days * 24 > 24:
-            raise CustomUserException("Token has expired.")
-        verified = SignupCode.objects.set_user_is_verified(code)
+            verification_code.user.is_verified = True
+            verification_code.user.save()
+            verification_code.delete()
+        except Exception:
+            raise custom_exception_handler("Unable to verify user")
+        return Response(data="Email address verified.", status=200)
 
-        if verified:
-            try:
-                signup_code = SignupCode.objects.get(code=code)
-                signup_code.delete()
-            except SignupCode.DoesNotExist:
-                pass
-            content = {"success": ("Email address verified.")}
-            return Response(data=content, status=200)
-        else:
-            content = {"detail": ("Unable to verify user.")}
-            return Response(data=content, status=400)
+
+class RecoverPassword(GenericAPIView):
+    """
+    View to handle sending email with reset password link and
+    changing password to a new one
+
+    """
+
+    queryset = User.objects.get_queryset_verified()
+    permission_classes = [permissions.AllowAny]
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return ResetPasswordEmailSerializer
+        elif self.request.method == "PUT":
+            return ResetPasswordSerializer
+
+    @swagger_auto_schema(responses={200: "Message"})
+    def post(self, request, format=None):
+        """
+        Sends email with link to reset password for given email address
+        """
+        try:
+            serializer = ResetPasswordEmailSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = self.queryset.get(email=request.data["email"])
+            reset_password_email(user, request)
+        except User.DoesNotExist:
+            raise CustomUserException("Account with given email does not exists")
+        return Response(
+            status=200, data="Reset link was sucessfully send to given address email"
+        )
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "code",
+                openapi.IN_QUERY,
+                description="String containing code from email link",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={200: "Message"},
+    )
+    def put(self, request, format=None):
+        """
+        Changes password for given user in reset code
+        """
+        try:
+            code = request.query_params["code"]
+        except MultiValueDictKeyError:
+            raise CustomUserException("code is needed")
+        reset_code = check_code_for_verification(code, PasswordResetCode)
+
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if not request.data["password"] == request.data["confirm_password"]:
+            raise CustomUserException("Passwords does not match")
+
+        try:
+            user = reset_code.user
+            user.set_password(request.data["password"])
+            user.save()
+            reset_code.delete()
+        except Exception:
+            raise CustomUserException("Unable to change user password")
+
+        return Response(status=200, data="Password was successfully changed")

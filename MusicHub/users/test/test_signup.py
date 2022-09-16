@@ -1,5 +1,3 @@
-from time import time
-
 from authemail.models import SignupCode
 from django.urls import reverse
 from django.utils import timezone

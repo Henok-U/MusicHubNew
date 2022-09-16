@@ -1,10 +1,18 @@
 from uuid import uuid4
 
+
 from authemail.models import EmailAbstractUser, EmailUserManager
-from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
-                                        PermissionsMixin)
-from django.core.validators import (EmailValidator, RegexValidator,
-                                    validate_image_file_extension)
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
+from django.core.validators import (
+    EmailValidator,
+    RegexValidator,
+    validate_image_file_extension,
+)
+
 from django.db import models
 
 

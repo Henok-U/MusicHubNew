@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
-from distutils.util import strtobool
+
 from os.path import join
 from pathlib import Path
 
@@ -52,6 +52,7 @@ class Common(Configuration):
         "authemail",
         "django_filters",
         "drf_yasg",
+        "social_django",
         # apps
         "MusicHub.users",
         "MusicHub.main",
@@ -93,6 +94,8 @@ class Common(Configuration):
                     "django.template.context_processors.request",
                     "django.contrib.auth.context_processors.auth",
                     "django.contrib.messages.context_processors.messages",
+                    "social_django.context_processors.backends",
+                    "social_django.context_processors.login_redirect",
                 ]
             },
         }
@@ -164,11 +167,20 @@ class Common(Configuration):
             "rest_framework.permissions.AllowAny",
         ],
         "DEFAULT_AUTHENTICATION_CLASSES": (
-            # "rest_framework.authentication.SessionAuthentication",
             "rest_framework.authentication.TokenAuthentication",
         ),
         "EXCEPTION_HANDLER": "MusicHub.main.exception_handler.custom_exception_handler",
     }
+    AUTHENTICATION_BACKENDS = (
+        # Google OAuth2
+        "social_core.backends.google.GoogleOAuth2",
+        "django.contrib.auth.backends.ModelBackend",
+    )
+    SOCIAL_AUTH_PIPELINE = (
+        "social_core.pipeline.social_auth.social_details",
+        "social_core.pipeline.social_auth.social_uid",
+        "MusicHub.main.utils.create_or_return_user",
+    )
 
     LOGGING = {
         "version": 1,

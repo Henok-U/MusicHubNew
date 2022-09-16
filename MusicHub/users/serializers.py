@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.core.validators import EmailValidator
+
 from ..main.utils import trim_spaces_from_data
 from .models import User
 
@@ -59,3 +60,7 @@ class ResetPasswordEmailSerializer(serializers.Serializer):
             )
         ],
     )
+
+
+class SocialAuthSerializer(serializers.Serializer):
+    access_token = serializers.CharField(max_length=250, allow_blank=False)

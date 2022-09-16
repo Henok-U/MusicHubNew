@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+
+from authemail.models import EmailAbstractUser, EmailUserManager
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -10,11 +12,15 @@ from django.core.validators import (
     RegexValidator,
     validate_image_file_extension,
 )
+
 from django.db import models
 
 
 class CustomManager(BaseUserManager):
     def create_user(self, email, password, first_name, last_name, **kwargs):
+        """
+        Creates and saves a User with a given email and password.
+        """
         user = self.model(
             email=email, first_name=first_name, last_name=last_name, **kwargs
         )
@@ -31,14 +37,21 @@ class CustomManager(BaseUserManager):
         user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
+        user.is_verified = True
         user.save(using=self._db)
 
         return user
 
+    def get_queryset_verified(self):
+        return super(CustomManager, self).get_queryset().filter(is_verified=True)
 
-class User(AbstractBaseUser, PermissionsMixin):
-    """Custom Abstract User Model"""
 
+class User(EmailAbstractUser):
+    """
+    Custom Abstract User Model that extends EmailAbstractUser
+    """
+
+    # custom fields
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)
 
     first_name = models.CharField(
@@ -96,6 +109,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
+    # required
     objects = CustomManager()
 
     USERNAME_FIELD = "email"

@@ -5,4 +5,3 @@ from MusicHub.config import Production
 
 class MediaStorage(S3Boto3Storage):
     bucket_name = "musichubstorage"
-    

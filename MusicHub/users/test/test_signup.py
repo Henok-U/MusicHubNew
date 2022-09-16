@@ -1,10 +1,14 @@
+from authemail.models import SignupCode
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from MusicHub.users.models import User
+
 
 class TestUserRegistrationAPIView(APITestCase):
-    url = reverse("create")
+    url = reverse("signup")
 
     def test_valid_user_registration(self):
         """
@@ -69,6 +73,67 @@ class TestUserRegistrationAPIView(APITestCase):
             "first_name": "Vin",
             "last_name": "Diesel",
         }
-        response = self.client.post(reverse("create"), data_two)
+        response = self.client.post(reverse("signup"), data_two)
 
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_verify_account_with_email_code_success(self):
+
+        data = {
+            "email": "testuser2@email.com",
+            "password": "abcABC123*",
+            "confirm_password": "abcABC123*",
+            "first_name": "Vin",
+            "last_name": "Diesel",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user = User.objects.get(email="testuser2@email.com")
+        self.assertEqual(user.is_verified, False)
+        verify_token = SignupCode.objects.get(user=user)
+        response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
+
+        user = User.objects.get(email="testuser2@email.com")
+        self.assertEqual(user.is_verified, True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_verify_account_with_expired_code_fail(self):
+        data = {
+            "email": "testuser2@email.com",
+            "password": "abcABC123*",
+            "confirm_password": "abcABC123*",
+            "first_name": "Vin",
+            "last_name": "Diesel",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user = User.objects.get(email="testuser2@email.com")
+        self.assertEqual(user.is_verified, False)
+        verify_token = SignupCode.objects.get(user=user)
+        verify_token.created_at = timezone.now() - timezone.timedelta(days=2)
+        verify_token.save()
+
+        response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
+
+        user = User.objects.get(email="testuser2@email.com")
+        self.assertEqual(user.is_verified, False)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_verify_account_with_email_code_fail(self):
+        data = {
+            "email": "testuser2@email.com",
+            "password": "abcABC123*",
+            "confirm_password": "abcABC123*",
+            "first_name": "Vin",
+            "last_name": "Diesel",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user = User.objects.get(email="testuser2@email.com")
+        self.assertEqual(user.is_verified, False)
+
+        response = self.client.get(f"/api/user/signup/verify/?code=somenotvalidcode")
+
+        user = User.objects.get(email="testuser2@email.com")
+        self.assertEqual(user.is_verified, False)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

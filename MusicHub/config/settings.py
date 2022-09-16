@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+
 from os.path import join
 from pathlib import Path
 
@@ -47,6 +48,8 @@ class Common(Configuration):
         "django.contrib.staticfiles",
         # Third party apps
         "rest_framework",
+        "rest_framework.authtoken",
+        "authemail",
         "django_filters",
         "drf_yasg",
         "social_django",
@@ -164,7 +167,7 @@ class Common(Configuration):
             "rest_framework.permissions.AllowAny",
         ],
         "DEFAULT_AUTHENTICATION_CLASSES": (
-            "drf_social_oauth2.authentication.SocialAuthentication",
+            "rest_framework.authentication.TokenAuthentication",
         ),
         "EXCEPTION_HANDLER": "MusicHub.main.exception_handler.custom_exception_handler",
     }
@@ -237,9 +240,20 @@ class Common(Configuration):
             },
         },
     }
-    # Email provider
-    EMAIL_HOST = "smtp.sendgrid.net"
-    EMAIL_PORT = "587"
-    EMAIL_HOST_USER = "apikey"
-    EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_KEY")
-    EMAIL = "musichub.itechart@gmail.com"
+
+    # Email settings
+    # https://docs.djangoproject.com/en/3.1/topics/email/
+    # https://docs.djangoproject.com/en/3.1/ref/settings/#email-host
+
+    EMAIL_FROM = (
+        os.environ.get("AUTHEMAIL_DEFAULT_EMAIL_FROM") or "musichub.itechart@gmail.com"
+    )
+    EMAIL_BCC = "<YOUR DEFAULT_EMAIL_BCC HERE>"
+    EMAIL_HOST = "smtp.sendgrid.net" or "smtp.gmail.com"
+    EMAIL_PORT = "587" or 587
+    EMAIL_HOST_USER = "apikey" or os.environ.get("AUTHEMAIL_EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_KEY") or os.getenv(
+        "AUTHEMAIL_EMAIL_HOST_PASSWORD"
+    )
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False

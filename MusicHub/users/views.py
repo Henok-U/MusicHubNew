@@ -131,8 +131,6 @@ class RecoverPassword(GenericAPIView):
 
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # if not "confirm_password" in request.data.keys():
-        #     raise CustomUserException("Confirm password field is required")
         if not request.data["password"] == request.data["confirm_password"]:
             raise CustomUserException("Passwords does not match")
 

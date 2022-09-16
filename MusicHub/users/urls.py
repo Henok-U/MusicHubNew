@@ -6,5 +6,5 @@ from .views import CreateUserView, CreateUserVerify, RecoverPassword
 urlpatterns = [
     path("create/", CreateUserView.as_view(), name="create"),
     path("create/verify/", CreateUserVerify.as_view(), name="create-verify"),
-    path("reset-password/", RecoverPassword.as_view()),
+    path("reset-password/", RecoverPassword.as_view(), name="reset-password"),
 ]

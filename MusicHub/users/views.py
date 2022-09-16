@@ -3,6 +3,7 @@ from rest_framework.generics import CreateAPIView, GenericAPIView
 from rest_framework import permissions
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
 from .models import User
 from .serializers import (
     UserSerializer,
@@ -118,7 +119,17 @@ class RecoverPassword(GenericAPIView):
             status=200, data="Reset link was sucessfully send to given address email"
         )
 
-    @swagger_auto_schema(responses={200: "Message"})
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                "code",
+                openapi.IN_QUERY,
+                description="String containing code from email link",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={200: "Message"},
+    )
     def put(self, request, format=None):
         """
         Changes password for given user in reset code

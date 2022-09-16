@@ -19,7 +19,7 @@ def send_email(subject: str, message: str, to_email: List[str]) -> None:
     send_mail(
         subject=subject,
         message=message,
-        from_email=Common.EMAIL,
+        from_email=Common.EMAIL_FROM,
         recipient_list=to_email,
         fail_silently=False,
     )
@@ -94,12 +94,11 @@ def create_or_return_user(backend, response, *args, **kwargs):
     users = User.objects.filter(email=response["sub"])
     if users.exists():
         return users.get()
-    # Todo return sign in token
     else:
         user = User.objects.create_user(
             email=response["sub"],
             first_name=response["given_name"],
             last_name=response["family_name"],
             password="",
-        )  # todo return sign in token
+        )
         return user

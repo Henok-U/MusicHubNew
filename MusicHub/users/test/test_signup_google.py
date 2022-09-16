@@ -12,7 +12,7 @@ class TestUserSignInGoogleAPIView(APITestCase):
     ! https://developers.google.com/oauthplayground/#step1&apisSelect=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%2Chttps%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&url=https%3A%2F%2F&content_type=application%2Fjson&http_method=GET&useDefaultOauthCred=unchecked&oauthEndpointSelect=Google&oauthAuthEndpointValue=https%3A%2F%2Faccounts.google.com%2Fo%2Foauth2%2Fv2%2Fauth&oauthTokenEndpointValue=https%3A%2F%2Foauth2.googleapis.com%2Ftoken&includeCredentials=unchecked&accessTokenType=bearer&autoRefreshToken=unchecked&accessType=offline&prompt=consent&response_type=code&wrapLines=on
     """
 
-    access_token = "ya29.a0Aa4xrXN0_FkmYS3HXfNNYoVaWOHTkuyKhsBYssA3WVUEvTVfi6dAEqLrVvhOYTXWEWl0d-6GM0L7ipBrKwrQNZsBvhHiqsB7oXrrdyNF5EuToLeT38xPhMmbVWH8Jq-zKXZm9Wkuy5C8nV4PkFSRNpDtVPMhaCgYKATASARISFQEjDvL97wupu4RFfNKbKv-cil1qaQ0163"
+    access_token = ""
 
     def test_create_user_pass(self):
         data = {"access_token": self.access_token}

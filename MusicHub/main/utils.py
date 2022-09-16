@@ -2,6 +2,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from typing import List
 from authemail.models import SignupCode, PasswordResetCode
+from rest_framework.authtoken.models import Token as SigninToken
 from .exception_handler import CustomUserException
 
 
@@ -26,7 +27,7 @@ def verification_email(user, request):
     signup_code = SignupCode.objects.create_signup_code(user, ipaddr)
     send_email(
         subject="Verify email account: ",
-        message=f"http://localhost:8000/api/user/create/verify/?code={signup_code}",
+        message=f"http://localhost:8000/api/user/signup/verify/?code={signup_code}",
         to_email=[user.email],
     )
 
@@ -54,3 +55,17 @@ def check_code_for_verification(
         raise CustomUserException("Token has expired.")
 
     return verifiation_code
+
+
+def check_sigin_code(code: str, objectModel: SigninToken) -> str:
+    try:
+        verification_code = objectModel.objects.get(key=code)
+    except objectModel.DoesNotExist:
+        raise CustomUserException("Verificaiton code is not a valid code.")
+    now = timezone.now()
+    diff = now - verification_code.created
+
+    if diff.seconds // 60 > 60:
+        raise CustomUserException("Token has expired.")
+
+    return verification_code

@@ -1,31 +1,39 @@
-from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView, GenericAPIView
-from rest_framework import permissions
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
-
-from .models import User
-from .serializers import (
-    UserSerializer,
-    CreateUserSerializer,
-    ResetPasswordSerializer,
-    ResetPasswordEmailSerializer,
-)
-from ..main.exception_handler import CustomUserException, custom_exception_handler
-from MusicHub.main.utils import check_code_for_verification
 from authemail.models import SignupCode, PasswordResetCode
-
 from authemail.views import SignupVerify
-from MusicHub.main.utils import verification_email, reset_password_email
+from django.contrib.auth import authenticate
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.datastructures import MultiValueDictKeyError
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.authtoken.models import Token as SigninToken
+from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework import permissions
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from MusicHub.main.utils import (
+    verification_email,
+    check_code_for_verification,
+    check_sigin_code,
+    reset_password_email,
+)
+
+from ..main.exception_handler import CustomUserException, custom_exception_handler
+from .models import User
+from .serializers import (
+    SigninSerializer,
+    SignupSerializer,
+    UserSerializer,
+    ResetPasswordSerializer,
+    ResetPasswordEmailSerializer,
+)
 
 
-class CreateUserView(CreateAPIView):
+class SignUpView(CreateAPIView):
 
-    permission_classes = [permissions.AllowAny]
-    serializer_class = CreateUserSerializer
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = SignupSerializer
 
     def create(self, request, *args, **kwargs):
         queryset = User.objects.filter(email=request.data["email"])
@@ -46,7 +54,7 @@ class CreateUserView(CreateAPIView):
         if not request.data["password"] == request.data["confirm_password"]:
             raise CustomUserException("Passwords does not match")
 
-        serializer = CreateUserSerializer(data=request.data)
+        serializer = SignupSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         model_serializer = UserSerializer(data=serializer.data)
@@ -73,12 +81,13 @@ class CreateUserView(CreateAPIView):
         ]
     ),
 )
-class CreateUserVerify(SignupVerify):
+class SignUpVerifyView(SignupVerify):
+    permission_classes = (permissions.AllowAny,)
+
     def get(self, request, format=None):
         code = request.GET.get("code", "")
         verification_code = check_code_for_verification(code, SignupCode)
         try:
-
             verification_code.user.is_verified = True
             verification_code.user.save()
             verification_code.delete()
@@ -87,11 +96,58 @@ class CreateUserVerify(SignupVerify):
         return Response(data="Email address verified.", status=200)
 
 
+class SignInView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = SigninSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = SigninSerializer(data=request.data)
+
+        if serializer.is_valid():
+            email = serializer.data["email"]
+            password = serializer.data["password"]
+            user = authenticate(email=email, password=password)
+
+            if user:
+                if user.is_verified:
+                    if user.is_active:
+                        token, created = SigninToken.objects.get_or_create(user=user)
+                        content = {"token": token.key}
+                        status = 200
+                    else:
+                        content = {"detail": ("Inactive user account.")}
+                        status = 401
+                else:
+                    content = {"detail": ("Unverified user account.")}
+                    status = 401
+            else:
+                content = {"detail": ("Invalid credentials, unable to signin.")}
+                status = 401
+
+        else:
+            content = serializer.errors
+            status = 400
+        return Response(content, status)
+
+
+class SignOutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        tokens = SigninToken.objects.filter(user=request.user)
+        for token in tokens:
+            checked_token = check_sigin_code(token, SigninToken)
+            checked_token.delete()
+        content = {"Succes": ("User signed out.")}
+        status = 200
+
+        return Response(content, status=status)
+
+
 class RecoverPassword(GenericAPIView):
     """
     View to handle sending email with reset password link and
     changing password to a new one
-
     """
 
     queryset = User.objects.get_queryset_verified()

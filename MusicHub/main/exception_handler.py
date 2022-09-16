@@ -1,7 +1,6 @@
 from django.http.response import Http404
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.views import exception_handler
-from rest_framework.exceptions import APIException
 
 
 def custom_exception_handler(exc, context):

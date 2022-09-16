@@ -1,6 +1,6 @@
+from authemail.admin import EmailUserAdmin
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from authemail.admin import EmailUserAdmin
 
 
 class UserAdmin(EmailUserAdmin):

@@ -82,8 +82,11 @@ def check_sigin_code(code: str, objectModel: SigninToken) -> str:
         verification_code = objectModel.objects.get(key=code)
     except objectModel.DoesNotExist:
         raise CustomUserException("Verificaiton code is not a valid code.")
-    if has_token_expired(verification_code, 1):
-        raise CustomUserException("Token has expired")
+    now = timezone.now()
+    diff = now - verification_code.created
+
+    if diff.seconds // 60 > 60:
+        raise CustomUserException("Token has expired.")
     return verification_code
 
 

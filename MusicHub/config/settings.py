@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
 import os
 from os.path import join
-from distutils.util import strtobool
+from pathlib import Path
+
 from configurations import Configuration
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -47,7 +47,11 @@ class Common(Configuration):
         "django.contrib.staticfiles",
         # Third party apps
         "rest_framework",
+        "rest_framework.authtoken",
+        "authemail",
         "django_filters",
+        "drf_yasg",
+        "social_django",
         # apps
         "MusicHub.users",
         "MusicHub.main",
@@ -89,6 +93,8 @@ class Common(Configuration):
                     "django.template.context_processors.request",
                     "django.contrib.auth.context_processors.auth",
                     "django.contrib.messages.context_processors.messages",
+                    "social_django.context_processors.backends",
+                    "social_django.context_processors.login_redirect",
                 ]
             },
         }
@@ -160,10 +166,20 @@ class Common(Configuration):
             "rest_framework.permissions.AllowAny",
         ],
         "DEFAULT_AUTHENTICATION_CLASSES": (
-            "rest_framework.authentication.SessionAuthentication",
             "rest_framework.authentication.TokenAuthentication",
         ),
+        "EXCEPTION_HANDLER": "MusicHub.main.exception_handler.custom_exception_handler",
     }
+    AUTHENTICATION_BACKENDS = (
+        # Google OAuth2
+        "social_core.backends.google.GoogleOAuth2",
+        "django.contrib.auth.backends.ModelBackend",
+    )
+    SOCIAL_AUTH_PIPELINE = (
+        "social_core.pipeline.social_auth.social_details",
+        "social_core.pipeline.social_auth.social_uid",
+        "MusicHub.main.utils.create_or_return_user",
+    )
 
     LOGGING = {
         "version": 1,
@@ -223,3 +239,20 @@ class Common(Configuration):
             },
         },
     }
+
+    # Email settings
+    # https://docs.djangoproject.com/en/3.1/topics/email/
+    # https://docs.djangoproject.com/en/3.1/ref/settings/#email-host
+
+    EMAIL_FROM = (
+        os.environ.get("AUTHEMAIL_DEFAULT_EMAIL_FROM") or "musichub.itechart@gmail.com"
+    )
+    EMAIL_BCC = "<YOUR DEFAULT_EMAIL_BCC HERE>"
+    EMAIL_HOST = "smtp.sendgrid.net" or "smtp.gmail.com"
+    EMAIL_PORT = "587" or 587
+    EMAIL_HOST_USER = "apikey" or os.environ.get("AUTHEMAIL_EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_KEY") or os.getenv(
+        "AUTHEMAIL_EMAIL_HOST_PASSWORD"
+    )
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False

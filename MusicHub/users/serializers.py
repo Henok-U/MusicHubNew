@@ -44,9 +44,10 @@ class SignupSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**trim_spaces_from_data(validated_data))
 
 
-class SigninSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=256, allow_blank=False)
-    password = serializers.CharField(min_length=8, max_length=64, allow_blank=False)
+class SigninSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email", "password"]
 
 
 class ResetPasswordSerializer(serializers.ModelSerializer):

@@ -1,7 +1,6 @@
 from authemail.models import PasswordResetCode, SignupCode
 from authemail.views import SignupVerify
 from django.contrib.auth import authenticate
-from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.decorators import method_decorator
 from drf_yasg import openapi
@@ -31,9 +30,10 @@ from .serializers import (
     SignupSerializer,
     SocialAuthSerializer,
 )
+from . import custom_user_schema
 
 
-class SignUpView(CreateAPIView):
+class SignUpView(GenericAPIView):
     """
     View for signing up user
     """
@@ -41,7 +41,8 @@ class SignUpView(CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = SignupSerializer
 
-    def create(self, request, *args, **kwargs):
+    @swagger_auto_schema(responses=custom_user_schema.signup_return_schema)
+    def post(self, request, *args, **kwargs):
         queryset = User.objects.filter(email=request.data["email"])
 
         if queryset.exists():
@@ -96,7 +97,7 @@ class SignUpVerifyView(SignupVerify):
         return Response(data="Email address verified.", status=200)
 
 
-class SignInView(APIView):
+class SignInView(GenericAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = SigninSerializer
 

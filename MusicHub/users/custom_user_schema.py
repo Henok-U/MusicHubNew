@@ -58,3 +58,61 @@ reset_password_query = openapi.Parameter(
     description="String containing code from email link",
     type=openapi.TYPE_STRING,
 )
+
+signin_request_schema = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=["email", "password"],
+    properties={
+        "email": openapi.Schema(type=openapi.TYPE_STRING, description="email"),
+        "password": openapi.Schema(type=openapi.TYPE_STRING, description="password"),
+    },
+)
+signin_return_schema = {
+    "200": openapi.Response(
+        description="User signed in successfully",
+        examples={"application/json": {"token": "string"}},
+    )
+}
+
+signup_verify_parameters = [
+    openapi.Parameter(
+        "code",
+        openapi.IN_QUERY,
+        description="Successful verification\nGET api/accounts/signup/verify/?code=<token>",
+        type=openapi.TYPE_STRING,
+    ),
+]
+signup_verify_response = {
+    "200": openapi.Response(
+        description="User Verified!",
+        examples={"application/json": {"message": "User verified succefully"}},
+    ),
+    "400": openapi.Response(
+        description="custom Error message",
+        examples={
+            "application/json": {"message": "error message", "status_code": "400"}
+        },
+    ),
+}
+
+signout_parameters = [
+    openapi.Parameter(
+        name="token",
+        in_=openapi.IN_HEADER,
+        type=openapi.TYPE_STRING,
+        description="Successful signout only possible if token is provided",
+    ),
+]
+
+signout_verify_response = {
+    "200": openapi.Response(
+        description="User signed out",
+        examples={"application/json": {"message": "User signed out succefully"}},
+    ),
+    "400": openapi.Response(
+        description="custom Error message",
+        examples={
+            "application/json": {"message": "error message", "status_code": "400"}
+        },
+    ),
+}

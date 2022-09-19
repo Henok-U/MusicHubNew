@@ -63,27 +63,13 @@ class SignUpView(GenericAPIView):
         return Response(status=200, data=serializer.data)
 
 
-@method_decorator(
-    name="get",
-    decorator=swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter(
-                "code",
-                openapi.IN_QUERY,
-                description="Successful verification\nGET api/accounts/signup/verify/?code=<token>",
-                type=openapi.TYPE_STRING,
-            ),
-        ],
-        security=[],
-        responses={
-            "400": openapi.IN_BODY,
-            "200": openapi.IN_BODY,
-        },
-    ),
-)
 class SignUpVerifyView(SignupVerify):
     permission_classes = (permissions.AllowAny,)
 
+    @swagger_auto_schema(
+        manual_parameters=custom_user_schema.signup_verify_parameters,
+        responses=custom_user_schema.signup_verify_response,
+    )
     def get(self, request, format=None):
 
         try:
@@ -102,16 +88,8 @@ class SignInView(APIView):
     serializer_class = SigninSerializer
 
     @swagger_auto_schema(
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            required=["email", "password"],
-            properties={
-                "email": openapi.Schema(type=openapi.TYPE_STRING, description="email"),
-                "password": openapi.Schema(
-                    type=openapi.TYPE_STRING, description="password"
-                ),
-            },
-        ),
+        request_body=custom_user_schema.signin_request_schema,
+        responses=custom_user_schema.signin_return_schema,
     )
     def post(self, request, *args, **kwargs):
         serializer = SigninSerializer(data=request.data)
@@ -147,19 +125,8 @@ class SignOutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter(
-                name="token",
-                in_=openapi.IN_HEADER,
-                type=openapi.TYPE_STRING,
-                description="Successful signout only possible if token is provided",
-            ),
-        ],
-        security=[],
-        responses={
-            "200": "User signed out successfully",
-            "401": "Sign out unsuccessfull",
-        },
+        manual_parameters=custom_user_schema.signout_parameters,
+        responses=custom_user_schema.signout_verify_response,
     )
     def get(self, request, *args, **kwargs):
         tokens = SigninToken.objects.filter(user=request.user)

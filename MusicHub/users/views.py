@@ -97,7 +97,7 @@ class SignUpVerifyView(SignupVerify):
         return Response(data="Email address verified.", status=200)
 
 
-class SignInView(GenericAPIView):
+class SignInView(APIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = SigninSerializer
 
@@ -186,7 +186,7 @@ class RecoverPassword(GenericAPIView):
         elif self.request.method == "PUT":
             return ResetPasswordSerializer
 
-    @swagger_auto_schema(responses={200: "Message"})
+    @swagger_auto_schema(responses=custom_user_schema.reset_password_returns)
     def post(self, request, format=None):
         """
         Sends email with link to reset password for given email address
@@ -203,15 +203,8 @@ class RecoverPassword(GenericAPIView):
         )
 
     @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter(
-                "code",
-                openapi.IN_QUERY,
-                description="String containing code from email link",
-                type=openapi.TYPE_STRING,
-            ),
-        ],
-        responses={200: "Message"},
+        manual_parameters=[custom_user_schema.reset_password_query],
+        responses=custom_user_schema.reset_password_returns,
     )
     def put(self, request, format=None):
         """
@@ -236,16 +229,9 @@ class RecoverPassword(GenericAPIView):
 
 @swagger_auto_schema(
     method="post",
-    manual_parameters=[
-        openapi.Parameter(
-            "backend",
-            openapi.IN_PATH,
-            description="backend type - currently supporting only google-oauth2",
-            type=openapi.TYPE_STRING,
-        )
-    ],
+    manual_parameters=[custom_user_schema.google_oauth_backend],
     request_body=SocialAuthSerializer,
-    responses={200: "token - authorization token"},
+    responses=custom_user_schema.google_oauth_return,
 )
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])
@@ -253,7 +239,7 @@ class RecoverPassword(GenericAPIView):
 def social_sign_google(request, backend):
     """View to exchange google API token for application authorization token
     If no user is associated with google token data, user will be created
-    {backend} path should be set to 'google-oauth2'
+    otherwise, user will be logged in
     """
 
     if not backend == "google-oauth2":

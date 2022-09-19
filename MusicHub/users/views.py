@@ -17,7 +17,6 @@ from social_django.utils import psa
 
 from MusicHub.main.utils import (
     check_code_for_verification,
-    check_sigin_code,
     has_token_expired,
     reset_password_email,
     verification_email,
@@ -164,8 +163,7 @@ class SignOutView(APIView):
     def get(self, request, *args, **kwargs):
         tokens = SigninToken.objects.filter(user=request.user)
         for token in tokens:
-            checked_token = check_sigin_code(token, SigninToken)
-            checked_token.delete()
+            token.delete()
         content = {"Success": ("User signed out.")}
         status = 200
 

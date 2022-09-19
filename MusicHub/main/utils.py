@@ -77,19 +77,6 @@ def check_code_for_verification(
     return verifiation_code
 
 
-def check_sigin_code(code: str, objectModel: SigninToken) -> str:
-    try:
-        verification_code = objectModel.objects.get(key=code)
-    except objectModel.DoesNotExist:
-        raise CustomUserException("Verificaiton code is not a valid code.")
-    now = timezone.now()
-    diff = now - verification_code.created
-
-    if diff.seconds // 60 > 60:
-        raise CustomUserException("Token has expired.")
-    return verification_code
-
-
 def create_or_return_user(backend, response, *args, **kwargs):
     """Pipeline for social authentication
         responsible for creating new user or returning existing one

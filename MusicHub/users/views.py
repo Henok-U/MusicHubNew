@@ -17,7 +17,6 @@ from social_django.utils import psa
 
 from MusicHub.main.utils import (
     check_code_for_verification,
-    check_sigin_code,
     has_token_expired,
     reset_password_email,
     verification_email,
@@ -73,7 +72,12 @@ class SignUpView(CreateAPIView):
                 description="Successful verification\nGET api/accounts/signup/verify/?code=<token>",
                 type=openapi.TYPE_STRING,
             ),
-        ]
+        ],
+        security=[],
+        responses={
+            "400": openapi.IN_BODY,
+            "200": openapi.IN_BODY,
+        },
     ),
 )
 class SignUpVerifyView(SignupVerify):
@@ -96,6 +100,18 @@ class SignInView(APIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = SigninSerializer
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=["email", "password"],
+            properties={
+                "email": openapi.Schema(type=openapi.TYPE_STRING, description="email"),
+                "password": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="password"
+                ),
+            },
+        ),
+    )
     def post(self, request, *args, **kwargs):
         serializer = SigninSerializer(data=request.data)
 
@@ -129,12 +145,26 @@ class SignInView(APIView):
 class SignOutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                name="token",
+                in_=openapi.IN_HEADER,
+                type=openapi.TYPE_STRING,
+                description="Successful signout only possible if token is provided",
+            ),
+        ],
+        security=[],
+        responses={
+            "200": "User signed out successfully",
+            "401": "Sign out unsuccessfull",
+        },
+    )
     def get(self, request, *args, **kwargs):
         tokens = SigninToken.objects.filter(user=request.user)
         for token in tokens:
-            checked_token = check_sigin_code(token, SigninToken)
-            checked_token.delete()
-        content = {"Succes": ("User signed out.")}
+            token.delete()
+        content = {"Success": ("User signed out.")}
         status = 200
 
         return Response(content, status=status)

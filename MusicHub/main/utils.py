@@ -15,13 +15,18 @@ def send_email(subject: str, message: str, to_email: List[str]) -> None:
     """
     Send email from musichub email address to subject or list of subjects
     """
-    send_mail(
-        subject=subject,
-        message=message,
-        from_email=Common.EMAIL_FROM,
-        recipient_list=to_email,
-        fail_silently=False,
-    )
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=Common.EMAIL_FROM,
+            recipient_list=to_email,
+            fail_silently=False,
+        )
+    except Exception as e:
+        raise CustomUserException(
+            f"Error during sending email, detail message: {e.message}"
+        )
 
 
 def trim_spaces_from_data(data: str) -> str:
@@ -43,13 +48,20 @@ def verification_email(user, request):
     )
 
 
-def reset_password_email(user, request):
+def reset_password_email(user):
     reset_code = PasswordResetCode.objects.create_password_reset_code(user)
     send_email(
         subject="Reset account password link: ",
         message=f"http://localhost:8000/api/user/reset-password/?code={reset_code}",
         to_email=[user.email],
     )
+
+
+def has_token_expired(token, time):
+    diff = timezone.now() - token.created_at
+    if diff.days * 24 > time:
+        return True
+    return False
 
 
 def check_code_for_verification(
@@ -59,10 +71,7 @@ def check_code_for_verification(
         verifiation_code = objectModel.objects.get(code=code)
     except objectModel.DoesNotExist:
         raise CustomUserException("Verification code is not a valid code")
-    now = timezone.now()
-    diff = now - verifiation_code.created_at
-
-    if diff.days * 24 > 24:
+    if has_token_expired(verifiation_code, 24):
         raise CustomUserException("Token has expired.")
 
     return verifiation_code
@@ -73,12 +82,8 @@ def check_sigin_code(code: str, objectModel: SigninToken) -> str:
         verification_code = objectModel.objects.get(key=code)
     except objectModel.DoesNotExist:
         raise CustomUserException("Verificaiton code is not a valid code.")
-    now = timezone.now()
-    diff = now - verification_code.created
-
-    if diff.seconds // 60 > 60:
-        raise CustomUserException("Token has expired.")
-
+    if has_token_expired(verification_code, 1):
+        raise CustomUserException("Token has expired")
     return verification_code
 
 

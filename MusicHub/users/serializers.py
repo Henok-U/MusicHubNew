@@ -5,30 +5,43 @@ from ..main.utils import trim_spaces_from_data
 from .models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class SignupSerializer(serializers.ModelSerializer):
+    confirm_password = serializers.CharField(
+        min_length=8, max_length=64, allow_blank=False
+    )
+
     class Meta:
         model = User
         fields = [
             "id",
             "email",
             "password",
+            "confirm_password",
             "first_name",
             "last_name",
         ]
-        extra_kwargs = {"password": {"write_only": True}, "id": {"read_only": True}}
+        extra_kwargs = {
+            "password": {"write_only": True},
+            "confirm_password": {"write_only": True},
+            "id": {"read_only": True},
+        }
+
+    def validate(self, attrs):
+        if not attrs["password"] == attrs["confirm_password"]:
+            raise serializers.ValidationError("Passwords does not match")
+        return attrs
+
+    def to_representation(self, instance):
+        return {
+            "id": instance.id,
+            "email": instance.email,
+            "first_name": instance.first_name,
+            "last_name": instance.last_name,
+        }
 
     def create(self, validated_data):
+        validated_data.pop("confirm_password")
         return User.objects.create_user(**trim_spaces_from_data(validated_data))
-
-
-class SignupSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=256, allow_blank=False)
-    first_name = serializers.CharField(max_length=30, allow_blank=False)
-    last_name = serializers.CharField(max_length=30, allow_blank=False)
-    password = serializers.CharField(min_length=8, max_length=64, allow_blank=False)
-    confirm_password = serializers.CharField(
-        min_length=8, max_length=64, allow_blank=False
-    )
 
 
 class SigninSerializer(serializers.Serializer):
@@ -40,6 +53,11 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(
         max_length=100,
     )
+
+    def validate(self, attrs):
+        if not attrs["password"] == attrs["confirm_password"]:
+            raise serializers.ValidationError("Passwords does not match")
+        return attrs
 
     class Meta:
         model = User

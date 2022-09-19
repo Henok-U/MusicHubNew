@@ -15,19 +15,29 @@ from rest_framework.views import APIView
 from social_core.exceptions import AuthForbidden
 from social_django.utils import psa
 
-from MusicHub.main.utils import (check_code_for_verification, check_sigin_code,
-                                 reset_password_email, verification_email)
+from MusicHub.main.utils import (
+    check_code_for_verification,
+    check_sigin_code,
+    has_token_expired,
+    reset_password_email,
+    verification_email,
+)
 
-from ..main.exception_handler import (CustomUserException,
-                                      custom_exception_handler)
+from ..main.exception_handler import CustomUserException
 from .models import User
-from .serializers import (ResetPasswordEmailSerializer,
-                          ResetPasswordSerializer, SigninSerializer,
-                          SignupSerializer, SocialAuthSerializer,
-                          UserSerializer)
+from .serializers import (
+    ResetPasswordEmailSerializer,
+    ResetPasswordSerializer,
+    SigninSerializer,
+    SignupSerializer,
+    SocialAuthSerializer,
+)
 
 
 class SignUpView(CreateAPIView):
+    """
+    View for signing up user
+    """
 
     permission_classes = (permissions.AllowAny,)
     serializer_class = SignupSerializer
@@ -38,31 +48,19 @@ class SignUpView(CreateAPIView):
         if queryset.exists():
             if queryset.get().is_verified:
                 raise CustomUserException("Provided email address is already in use")
-            else:
-                token_date = SignupCode.objects.get(user=queryset.get()).created_at
-                diff = (timezone.now() - token_date).days * 24
 
-                if SignupCode.objects.filter(user=queryset.get()) and diff <= 24:
-                    return Response(status=400, data="Please verify your email")
-                else:
-                    verification_email(queryset.get(), request)
-        if not "confirm_password" in request.data.keys():
-            raise CustomUserException("Confirm password field is required")
-        if not request.data["password"] == request.data["confirm_password"]:
-            raise CustomUserException("Passwords does not match")
+            if has_token_expired(SignupCode.objects.get(user=queryset.get()), 24):
+                signup_code = SignupCode.objects.get(user=queryset.get())
+                signup_code.delete()
+                verification_email(queryset.get(), request)
+            raise CustomUserException("Please verify Your email address")
 
-        serializer = SignupSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        verification_email(user, request)
 
-        model_serializer = UserSerializer(data=serializer.data)
-        model_serializer.is_valid(raise_exception=True)
-        user = model_serializer.save()
-        try:
-            verification_email(user, request)
-        except Exception:
-            raise CustomUserException("Error during sending email.")
-
-        return Response(status=200, data=model_serializer.data)
+        return Response(status=200, data=serializer.data)
 
 
 @method_decorator(
@@ -82,14 +80,15 @@ class SignUpVerifyView(SignupVerify):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, format=None):
-        code = request.GET.get("code", "")
-        verification_code = check_code_for_verification(code, SignupCode)
+
         try:
+            code = request.query_params["code"]
+            verification_code = check_code_for_verification(code, SignupCode)
             verification_code.user.is_verified = True
             verification_code.user.save()
             verification_code.delete()
-        except Exception:
-            raise custom_exception_handler("Unable to verify user")
+        except MultiValueDictKeyError:
+            raise CustomUserException("Please provide code parameter")
         return Response(data="Email address verified.", status=200)
 
 
@@ -101,9 +100,9 @@ class SignInView(APIView):
         serializer = SigninSerializer(data=request.data)
 
         if serializer.is_valid():
-            email = serializer.data["email"]
-            password = serializer.data["password"]
-            user = authenticate(email=email, password=password)
+            user = authenticate(
+                email=serializer.data["email"], password=serializer.data["password"]
+            )
 
             if user:
                 if user.is_verified:
@@ -165,7 +164,7 @@ class RecoverPassword(GenericAPIView):
             serializer = ResetPasswordEmailSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             user = self.queryset.get(email=request.data["email"])
-            reset_password_email(user, request)
+            reset_password_email(user)
         except User.DoesNotExist:
             raise CustomUserException("Account with given email does not exists")
         return Response(
@@ -195,16 +194,11 @@ class RecoverPassword(GenericAPIView):
 
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        if not request.data["password"] == request.data["confirm_password"]:
-            raise CustomUserException("Passwords does not match")
 
-        try:
-            user = reset_code.user
-            user.set_password(request.data["password"])
-            user.save()
-            reset_code.delete()
-        except Exception:
-            raise CustomUserException("Unable to change user password")
+        user = reset_code.user
+        user.set_password(request.data["password"])
+        user.save()
+        reset_code.delete()
 
         return Response(status=200, data="Password was successfully changed")
 
@@ -225,7 +219,7 @@ class RecoverPassword(GenericAPIView):
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])
 @psa()
-def exchange_token(request, backend):
+def social_sign_google(request, backend):
     """View to exchange google API token for application authorization token
     If no user is associated with google token data, user will be created
     {backend} path should be set to 'google-oauth2'
@@ -241,7 +235,7 @@ def exchange_token(request, backend):
         except AuthForbidden as e:
             raise CustomUserException(str(e))
         token, created = SigninToken.objects.get_or_create(user=user)
-        content = {"token": token.key}
-        return Response(status=200, data=content)
+
+        return Response(status=200, data={"token": token.key})
 
     return Response(status=400, data="Error during signing")

@@ -1,3 +1,4 @@
+import email
 from authemail.models import SignupCode
 from django.urls import reverse
 from django.utils import timezone
@@ -5,6 +6,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from MusicHub.users.models import User
+from .user_factory import UserFactory
 
 
 class TestUserRegistrationAPIView(APITestCase):
@@ -137,3 +139,65 @@ class TestUserRegistrationAPIView(APITestCase):
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, False)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_signup_wrong_data_variants_fail(self):
+
+        data = {
+            "email": "testuser2@email.com",
+            "password": "abcABC123*",
+            "confirm_password": "abcABC123*2131321",
+            "first_name": "Vin",
+            "last_name": "Diesel",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = {
+            "email": "testuser2@email.com",
+            "password": "abcABC123*",
+            "first_name": "Vin",
+            "last_name": "Diesel",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        data = {
+            "email": "testuser2@email.com",
+            "password": "abcABC123*",
+            "confirm_password": "abcABC123*",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_signup_token_validaton_fail(self):
+        data = {
+            "email": "damian@email.com",
+            "password": "abcABC123*",
+            "confirm_password": "abcABC123*",
+            "first_name": "Vin",
+            "last_name": "Diesel",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user = User.objects.get(email="damian@email.com")
+        verify_token = SignupCode.objects.get(user=user)
+        response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        data = {
+            "email": "damian2@email.com",
+            "password": "abcABC123*",
+            "confirm_password": "abcABC123*",
+            "first_name": "Vin2",
+            "last_name": "Diesel2",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user = User.objects.get(email="damian2@email.com")
+        verify_token = SignupCode.objects.get(user=user)
+        verify_token.created_at = timezone.now() - timezone.timedelta(days=2)
+        verify_token.save()
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        verify_token2 = SignupCode.objects.get(user=user)
+        self.assertNotEqual(verify_token.code, verify_token2.code)

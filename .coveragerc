@@ -1,0 +1,11 @@
+[run]
+branch = True
+omit = *migrations*,
+       *urls*,
+       *test*,
+       *admin*,
+       ./manage.py,
+       ./MusicHub/config/*,
+       ./MusicHub/main/views.py,
+       ./MusicHub/wsgi.py,
+       *__init__*

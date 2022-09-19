@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MusicHub.config')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MusicHub.config")
     os.environ.setdefault("DJANGO_CONFIGURATION", "Development")
     try:
         from configurations.management import execute_from_command_line
@@ -26,5 +26,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

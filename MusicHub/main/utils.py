@@ -1,3 +1,5 @@
+import random
+import string
 from typing import List
 
 from authemail.models import PasswordResetCode, SignupCode
@@ -9,8 +11,6 @@ from MusicHub.config.settings import Common
 from MusicHub.users.models import User
 
 from .exception_handler import CustomUserException
-import string
-import random
 
 
 def send_email(subject: str, message: str, to_email: List[str]) -> None:

@@ -1,12 +1,13 @@
+import os
+from os.path import join
+from pathlib import Path
+
+from django.urls import reverse
 from faker import Faker
 from rest_framework.test import APITestCase
-from .user_factory import UserFactory
-from django.urls import reverse
-from pathlib import Path
-from os.path import join
-import os
-import io
+
 from ..models import User
+from .user_factory import UserFactory
 
 fake = Faker()
 

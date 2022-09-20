@@ -1,7 +1,7 @@
 from django.core.validators import EmailValidator
 from rest_framework import serializers
 
-from ..main.utils import trim_spaces_from_data, get_random_string
+from ..main.utils import get_random_string, trim_spaces_from_data
 from .models import User
 
 

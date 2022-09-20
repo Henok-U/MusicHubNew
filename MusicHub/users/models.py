@@ -4,8 +4,8 @@ from authemail.models import EmailAbstractUser
 from django.contrib.auth.models import BaseUserManager
 from django.core.validators import (
     EmailValidator,
-    RegexValidator,
     FileExtensionValidator,
+    RegexValidator,
 )
 from django.db import models
 

@@ -1,19 +1,35 @@
-from functools import partial
-from signal import raise_signal
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from ..serializers import AddChangePictureSerializer
-from ..models import User
-from ...main.exception_handler import CustomUserException
 from django.utils.datastructures import MultiValueDictKeyError
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.generics import GenericAPIView
+from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from MusicHub.users import custom_user_schema
+
+from ...main.exception_handler import CustomUserException
+from ..models import User
+from ..serializers import AddChangePictureSerializer
 
 
 class AddUpdateProfilePicture(GenericAPIView):
+    """
+    View responsible for adding or updating existing user profile picture.
+    User must be authenticated in order to add or update picture.
+    default relative path to picture is /media/users/avatar/example.jpg
+
+    """
 
     permission_classes = [IsAuthenticated]
-    serializer_class = AddChangePictureSerializer
+    parser_classes = [MultiPartParser]
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            custom_user_schema.add_update_picture_headear,
+            custom_user_schema.add_update_picture_body,
+        ],
+        responses=custom_user_schema.add_update_picture_response,
+    )
     def patch(self, request, *args, **kwargs):
         try:
             user = User.objects.get(email=request.user.email)

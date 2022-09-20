@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .views.profile_view import AddUpdateProfilePicture
 from .views.views import (
     RecoverPassword,
     SignInView,
@@ -8,7 +9,6 @@ from .views.views import (
     SignUpView,
     social_sign_google,
 )
-from .views.profile_view import AddUpdateProfilePicture
 
 urlpatterns = [
     path("signup/", SignUpView.as_view(), name="signup"),

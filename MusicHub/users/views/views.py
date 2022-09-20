@@ -2,13 +2,11 @@ from authemail.models import PasswordResetCode, SignupCode
 from authemail.views import SignupVerify
 from django.contrib.auth import authenticate
 from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.decorators import method_decorator
-from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token as SigninToken
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from social_core.exceptions import AuthForbidden
@@ -22,6 +20,7 @@ from MusicHub.main.utils import (
 )
 
 from ...main.exception_handler import CustomUserException
+from .. import custom_user_schema
 from ..models import User
 from ..serializers import (
     ResetPasswordEmailSerializer,
@@ -30,7 +29,6 @@ from ..serializers import (
     SignupSerializer,
     SocialAuthSerializer,
 )
-from .. import custom_user_schema
 
 
 class SignUpView(GenericAPIView):

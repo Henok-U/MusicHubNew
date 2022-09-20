@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from ..serializers import AddChangePictureSerializer
 from ..models import User
 from ...main.exception_handler import CustomUserException
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 class AddUpdateProfilePicture(GenericAPIView):
@@ -27,3 +28,5 @@ class AddUpdateProfilePicture(GenericAPIView):
 
         except User.DoesNotExist:
             raise CustomUserException("Could not find user with given credentials")
+        except MultiValueDictKeyError:
+            raise CustomUserException("Please provide valid body arguments")

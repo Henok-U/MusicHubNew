@@ -16,7 +16,7 @@ from pathlib import Path
 
 from configurations import Configuration
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class Common(Configuration):

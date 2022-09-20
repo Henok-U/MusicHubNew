@@ -9,6 +9,8 @@ from MusicHub.config.settings import Common
 from MusicHub.users.models import User
 
 from .exception_handler import CustomUserException
+import string
+import random
 
 
 def send_email(subject: str, message: str, to_email: List[str]) -> None:
@@ -96,3 +98,8 @@ def create_or_return_user(backend, response, *args, **kwargs):
             password="",
         )
         return user
+
+
+def get_random_string(length):
+    letters = string.ascii_lowercase
+    return "".join(random.choice(letters) for i in range(length))

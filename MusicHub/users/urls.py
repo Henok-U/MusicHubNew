@@ -8,6 +8,7 @@ from .views.views import (
     SignUpView,
     social_sign_google,
 )
+from .views.profile_view import AddUpdateProfilePicture
 
 urlpatterns = [
     path("signup/", SignUpView.as_view(), name="signup"),
@@ -16,4 +17,6 @@ urlpatterns = [
     path("signout/", SignOutView.as_view(), name="signout"),
     path("reset-password/", RecoverPassword.as_view(), name="reset-password"),
     path("signin-social/<str:backend>/", social_sign_google, name="signin-google"),
+    # profile urls
+    path("upload-photo/", AddUpdateProfilePicture.as_view(), name="upload-photo"),
 ]

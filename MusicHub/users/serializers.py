@@ -1,7 +1,7 @@
 from django.core.validators import EmailValidator
 from rest_framework import serializers
 
-from ..main.utils import trim_spaces_from_data
+from ..main.utils import trim_spaces_from_data, get_random_string
 from .models import User
 
 
@@ -82,3 +82,24 @@ class ResetPasswordEmailSerializer(serializers.Serializer):
 
 class SocialAuthSerializer(serializers.Serializer):
     access_token = serializers.CharField(max_length=250, allow_blank=False)
+
+
+class AddChangePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["profile_avatar"]
+
+    def validate(self, attrs):
+        picture = attrs["profile_avatar"]
+        # picture.size is in bytes
+        if picture.size > 3000000:
+            raise serializers.ValidationError(
+                "Picture size can not be greater than 3Mb"
+            )
+        return attrs
+
+    def save(self, **kwargs):
+        name = self.initial_data["profile_avatar"].name
+        random = get_random_string(10)
+        self.initial_data["profile_avatar"].name = f"{random}.{name.split('.')[-1]}"
+        return super().save(**kwargs)

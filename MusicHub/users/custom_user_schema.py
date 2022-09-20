@@ -76,7 +76,7 @@ signin_return_schema = {
 
 signup_verify_parameters = [
     openapi.Parameter(
-        "code",
+        "Token",
         openapi.IN_QUERY,
         description="Successful verification\nGET api/accounts/signup/verify/?code=<token>",
         type=openapi.TYPE_STRING,

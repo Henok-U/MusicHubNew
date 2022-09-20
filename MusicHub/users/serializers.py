@@ -1,3 +1,4 @@
+from dataclasses import fields
 from django.core.validators import EmailValidator
 from rest_framework import serializers
 
@@ -82,3 +83,10 @@ class ResetPasswordEmailSerializer(serializers.Serializer):
 
 class SocialAuthSerializer(serializers.Serializer):
     access_token = serializers.CharField(max_length=250, allow_blank=False)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name"]
+        extra_kwargs = {"email": {"read_only": True}}

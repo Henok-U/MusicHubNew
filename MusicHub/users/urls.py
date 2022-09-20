@@ -1,5 +1,7 @@
 from django.urls import path
 
+from MusicHub.users.views.profile_view import ProfileView
+
 from .views.views import (
     RecoverPassword,
     SignInView,
@@ -16,4 +18,5 @@ urlpatterns = [
     path("signout/", SignOutView.as_view(), name="signout"),
     path("reset-password/", RecoverPassword.as_view(), name="reset-password"),
     path("signin-social/<str:backend>/", social_sign_google, name="signin-google"),
+    path("profile/", ProfileView.as_view(), name="profile"),
 ]

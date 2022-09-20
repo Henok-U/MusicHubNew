@@ -1,5 +1,6 @@
 from drf_yasg import openapi
 
+
 signup_return_schema = {
     "201": openapi.Response(
         description="Successfull creation of user",
@@ -113,6 +114,60 @@ signout_verify_response = {
         description="custom Error message",
         examples={
             "application/json": {"message": "error message", "status_code": "400"}
+        },
+    ),
+}
+
+profile_get_response = {
+    "200": openapi.Response(
+        description="User profile",
+        examples={
+            "application/json": {
+                "email": "example@mail.com",
+                "first_name": "example_name",
+                "last_name": "example_surname",
+            }
+        },
+    ),
+    "401": openapi.Response(
+        description="User profile",
+        examples={"application/json": {"message": "Invalid token."}},
+    ),
+}
+
+
+profile_parameters = [
+    openapi.Parameter(
+        name="Token",
+        required=True,
+        in_=openapi.IN_HEADER,
+        type=openapi.TYPE_STRING,
+        description="Profile endpoints are avaliable only with token",
+    ),
+]
+
+profile_update_request = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=["first_name", "last_name"],
+    properties={
+        "first_name": openapi.Schema(
+            type=openapi.TYPE_STRING, description="first_name"
+        ),
+        "last_name": openapi.Schema(type=openapi.TYPE_STRING, description="last_name"),
+    },
+)
+
+profile_update_responses = {
+    "200": openapi.Response(
+        description="Update successful",
+        examples={"application/json": {"email": "User Updated succefully"}},
+    ),
+    "401": openapi.Response(
+        description="User profile",
+        examples={
+            "application/json": {
+                "message": "Authentication credentials were not provided."
+            }
         },
     ),
 }

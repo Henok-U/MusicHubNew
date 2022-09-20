@@ -1,6 +1,3 @@
-from codecs import getreader
-from unittest.mock import patch
-from webbrowser import get
 from django.urls import reverse
 
 from rest_framework import status

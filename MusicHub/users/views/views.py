@@ -2,8 +2,6 @@ from authemail.models import PasswordResetCode, SignupCode
 from authemail.views import SignupVerify
 from django.contrib.auth import authenticate
 from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.decorators import method_decorator
-from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token as SigninToken

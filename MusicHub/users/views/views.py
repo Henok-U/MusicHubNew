@@ -21,16 +21,16 @@ from MusicHub.main.utils import (
     verification_email,
 )
 
-from ..main.exception_handler import CustomUserException
-from .models import User
-from .serializers import (
+from ...main.exception_handler import CustomUserException
+from ..models import User
+from ..serializers import (
     ResetPasswordEmailSerializer,
     ResetPasswordSerializer,
     SigninSerializer,
     SignupSerializer,
     SocialAuthSerializer,
 )
-from . import custom_user_schema
+from .. import custom_user_schema
 
 
 class SignUpView(GenericAPIView):

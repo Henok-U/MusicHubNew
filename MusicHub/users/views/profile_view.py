@@ -22,7 +22,6 @@ class AddUpdateProfilePicture(GenericAPIView):
 
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser]
-    serializer_class = AddChangePictureSerializer
 
     @swagger_auto_schema(
         manual_parameters=[

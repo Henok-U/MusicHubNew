@@ -58,3 +58,10 @@ class TestUserRegistrationAPIView(APITestCase):
             response = self.client.patch(path=self.url, data={"picture": fppp})
 
             self.assertEqual(response.status_code, 400)
+
+    def test_add_picuture_no_body_arguments(self):
+        self.client.force_authenticate(user=self.user_data)
+        response = self.client.patch(path=self.url, data={"picture": ""})
+        self.assertEqual(response.status_code, 400)
+        response = self.client.patch(path=self.url)
+        self.assertEqual(response.status_code, 400)

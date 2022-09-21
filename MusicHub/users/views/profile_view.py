@@ -22,6 +22,7 @@ class AddUpdateProfilePicture(GenericAPIView):
 
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser]
+    serializer_class = AddChangePictureSerializer
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -44,5 +45,5 @@ class AddUpdateProfilePicture(GenericAPIView):
 
         except User.DoesNotExist:
             raise CustomUserException("Could not find user with given credentials")
-        except MultiValueDictKeyError:
+        except (MultiValueDictKeyError, KeyError):
             raise CustomUserException("Please provide valid body arguments")

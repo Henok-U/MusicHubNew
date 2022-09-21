@@ -206,10 +206,6 @@ def social_sign_google(request, backend):
     If no user is associated with google token data, user will be created
     otherwise, user will be logged in
     """
-
-    if not backend == "google-oauth2":
-        raise CustomUserException("Given backend provider is not valid")
-
     serializer = SocialAuthSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         try:
@@ -219,5 +215,3 @@ def social_sign_google(request, backend):
         token, created = SigninToken.objects.get_or_create(user=user)
 
         return Response(status=200, data={"token": token.key})
-
-    return Response(status=400, data="Error during signing")

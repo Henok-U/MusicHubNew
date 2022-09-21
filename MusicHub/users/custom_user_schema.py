@@ -41,7 +41,7 @@ google_oauth_return = {
 
 reset_password_returns = {
     "200": openapi.Response(
-        description="Successfull creation of user",
+        description="Successfull password reset",
         examples={"application/json": {"data": "Success"}},
     ),
     "400": openapi.Response(
@@ -171,3 +171,12 @@ profile_update_responses = {
         },
     ),
 }
+authorization_token = [
+    openapi.Parameter(
+        name="Authorization: token",
+        required=True,
+        in_=openapi.IN_HEADER,
+        type=openapi.TYPE_STRING,
+        description="Header in format - Authorization: token <token>",
+    ),
+]

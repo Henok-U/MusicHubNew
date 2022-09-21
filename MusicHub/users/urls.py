@@ -1,6 +1,6 @@
 from django.urls import path
 
-from MusicHub.users.views.profile_view import ProfileView
+from MusicHub.users.views.profile_view import ChangePassword, ProfileView
 
 from .views.views import (
     RecoverPassword,
@@ -19,4 +19,5 @@ urlpatterns = [
     path("reset-password/", RecoverPassword.as_view(), name="reset-password"),
     path("signin-social/<str:backend>/", social_sign_google, name="signin-google"),
     path("profile/", ProfileView.as_view(), name="profile"),
+    path("change-password/", ChangePassword.as_view(), name="change-password"),
 ]

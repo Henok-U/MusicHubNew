@@ -69,6 +69,36 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         }
 
 
+class ChangePasswordSerializer(serializers.ModelSerializer):
+
+    old_password = serializers.CharField(
+        max_length=100,
+    )
+    confirm_password = serializers.CharField(
+        max_length=100,
+    )
+
+    class Meta:
+        model = User
+        fields = ["password", "confirm_password", "old_password"]
+
+    def validate(self, attrs):
+        if not attrs["password"] == attrs["confirm_password"]:
+            raise serializers.ValidationError("Passwords does not match")
+        if not self.context["user"].check_password(attrs["old_password"]):
+            raise serializers.ValidationError("Invalid old password")
+        if attrs["password"] == attrs["old_password"]:
+            raise serializers.ValidationError(
+                "Old password and new password cannot be the same"
+            )
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data["password"])
+        instance.save()
+        return instance
+
+
 class ResetPasswordEmailSerializer(serializers.Serializer):
 
     email = serializers.CharField(

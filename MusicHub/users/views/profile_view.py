@@ -1,17 +1,18 @@
 from django.core.exceptions import ValidationError
-
+from django.utils.datastructures import MultiValueDictKeyError
 from drf_yasg.utils import swagger_auto_schema
-
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import *
-from rest_framework.generics import GenericAPIView
-from rest_framework.views import APIView
-from MusicHub.main.exception_handler import custom_exception_handler
-from MusicHub.users import custom_user_schema
 
+from MusicHub.main.exception_handler import (
+    CustomUserException,
+    custom_exception_handler,
+)
+from MusicHub.users import custom_user_schema
 from MusicHub.users.models import User
-from MusicHub.users.serializers import ProfileSerializer
+from MusicHub.users.serializers import ChangePasswordSerializer, ProfileSerializer
 
 
 class ProfileView(GenericAPIView):
@@ -50,3 +51,29 @@ class ProfileView(GenericAPIView):
 
         content = {"message": "Profile Updated successfully"}
         return Response(data=content)
+
+
+class ChangePassword(GenericAPIView):
+    """
+    View allowing authorized user to change their password
+    """
+
+    permission_classes = (IsAuthenticated,)
+
+    @swagger_auto_schema(
+        manual_parameters=custom_user_schema.authorization_token,
+        request_body=ChangePasswordSerializer,
+        responses=custom_user_schema.reset_password_returns,
+    )
+    def patch(self, request, *args, **kwargs):
+        try:
+
+            user = User.objects.get(email=request.user.email)
+            serializer = ChangePasswordSerializer(
+                user, data=request.data, context={"user": user}, partial=True
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(status=200, data="Password changed successfully")
+        except (MultiValueDictKeyError, KeyError):
+            raise CustomUserException("Please provide valid data")

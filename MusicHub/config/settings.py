@@ -259,8 +259,6 @@ class Common(Configuration):
     EMAIL_HOST = "smtp.sendgrid.net" or "smtp.gmail.com"
     EMAIL_PORT = "587" or 587
     EMAIL_HOST_USER = "apikey" or env("AUTHEMAIL_EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_KEY") or env(
-        "AUTHEMAIL_EMAIL_HOST_PASSWORD"
-    )
+    EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_KEY") or env("DJANGO_EMAIL_KEY")
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False

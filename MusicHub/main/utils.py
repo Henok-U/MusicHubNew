@@ -94,5 +94,6 @@ def create_or_return_user(backend, response, *args, **kwargs):
             first_name=response["given_name"],
             last_name=response["family_name"],
             password="",
+            is_verified=True,
         )
         return user

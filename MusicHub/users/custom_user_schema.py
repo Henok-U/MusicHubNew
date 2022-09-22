@@ -173,7 +173,7 @@ profile_update_responses = {
 }
 authorization_token = [
     openapi.Parameter(
-        name="Authorization: token",
+        name="Authorization",
         required=True,
         in_=openapi.IN_HEADER,
         type=openapi.TYPE_STRING,

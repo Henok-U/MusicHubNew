@@ -98,7 +98,7 @@ signup_verify_response = {
 
 signout_parameters = [
     openapi.Parameter(
-        name="token",
+        name="Authorization",
         in_=openapi.IN_HEADER,
         type=openapi.TYPE_STRING,
         description="Successful signout only possible if token is provided",

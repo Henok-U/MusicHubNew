@@ -25,7 +25,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="MusicHub API docs",
         default_version="v1",
-        description="User Registration and authentication",
+        description="",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@snippets.local"),
         license=openapi.License(name="BSD License"),

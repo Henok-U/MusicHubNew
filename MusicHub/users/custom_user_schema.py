@@ -138,7 +138,7 @@ profile_get_response = {
 
 profile_parameters = [
     openapi.Parameter(
-        name="Token",
+        name="Authorization",
         required=True,
         in_=openapi.IN_HEADER,
         type=openapi.TYPE_STRING,

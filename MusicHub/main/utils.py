@@ -15,18 +15,18 @@ def send_email(subject: str, message: str, to_email: List[str]) -> None:
     """
     Send email from musichub email address to subject or list of subjects
     """
-    # try:
-    #     send_mail(
-    #         subject=subject,
-    #         message=message,
-    #         from_email=Common.EMAIL_FROM,
-    #         recipient_list=to_email,
-    #         fail_silently=False,
-    #     )
-    # except Exception as e:
-    #     raise CustomUserException(
-    #         f"Error during sending email, detail message: {e.message}"
-    #     )
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=Common.EMAIL_FROM,
+            recipient_list=to_email,
+            fail_silently=False,
+        )
+    except Exception as e:
+        raise CustomUserException(
+            f"Error during sending email, detail message: {e.message}"
+        )
 
 
 def trim_spaces_from_data(data: str) -> str:
@@ -57,9 +57,9 @@ def reset_password_email(user):
     )
 
 
-def has_token_expired(token, time):
-    diff = timezone.now() - token.created_at
-    if diff.days * 24 > time:
+def has_token_expired(token):
+    time = token.created_at + timezone.timedelta(days=1)
+    if time < timezone.now():
         return True
     return False
 
@@ -71,7 +71,7 @@ def check_code_for_verification(
         verifiation_code = objectModel.objects.get(code=code)
     except objectModel.DoesNotExist:
         raise CustomUserException("Verification code is not a valid code")
-    if has_token_expired(verifiation_code, 24):
+    if has_token_expired(verifiation_code):
         raise CustomUserException("Token has expired.")
 
     return verifiation_code

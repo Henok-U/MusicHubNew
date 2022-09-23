@@ -49,7 +49,7 @@ class SignUpView(GenericAPIView):
             if queryset.get().is_verified:
                 raise CustomUserException("Provided email address is already in use")
 
-            if has_token_expired(SignupCode.objects.get(user=queryset.get()), 24):
+            if has_token_expired(SignupCode.objects.get(user=queryset.get())):
                 signup_code = SignupCode.objects.get(user=queryset.get())
                 signup_code.delete()
                 verification_email(queryset.get(), request)

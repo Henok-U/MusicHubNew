@@ -112,7 +112,7 @@ class TestUserRegistrationAPIView(APITestCase):
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, False)
         verify_token = SignupCode.objects.get(user=user)
-        verify_token.created_at = timezone.now() - timezone.timedelta(days=2)
+        verify_token.created_at = timezone.now() - timezone.timedelta(hours=29)
         verify_token.save()
 
         response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
@@ -120,6 +120,37 @@ class TestUserRegistrationAPIView(APITestCase):
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, False)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(response.data.get("message") == "Token has expired.")
+
+        verify_token.created_at = timezone.now() - timezone.timedelta(hours=25)
+        verify_token.save()
+
+        response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
+
+        user = User.objects.get(email="testuser2@email.com")
+        self.assertEqual(user.is_verified, False)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(response.data.get("message") == "Token has expired.")
+
+        verify_token.created_at = timezone.now() - timezone.timedelta(hours=50)
+        verify_token.save()
+
+        response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
+
+        user = User.objects.get(email="testuser2@email.com")
+        self.assertEqual(user.is_verified, False)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(response.data.get("message") == "Token has expired.")
+
+        # Success
+        verify_token.created_at = timezone.now() - timezone.timedelta(hours=23)
+        verify_token.save()
+
+        response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
+
+        user = User.objects.get(email="testuser2@email.com")
+        self.assertEqual(user.is_verified, True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_verify_account_with_email_code_fail(self):
         data = {
@@ -163,6 +194,8 @@ class TestUserRegistrationAPIView(APITestCase):
             "email": "testuser2@email.com",
             "password": "abcABC123*",
             "confirm_password": "abcABC123*",
+            "first_name": "Vin123",
+            "last_name": "Diesel$%@",
         }
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -188,8 +221,8 @@ class TestUserRegistrationAPIView(APITestCase):
             "email": "damian2@email.com",
             "password": "abcABC123*",
             "confirm_password": "abcABC123*",
-            "first_name": "Vin2",
-            "last_name": "Diesel2",
+            "first_name": "Vin",
+            "last_name": "Diesel",
         }
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

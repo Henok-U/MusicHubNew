@@ -54,6 +54,7 @@ class Common(Configuration):
         "social_django",
         # apps
         "MusicHub.users",
+        "MusicHub.tracks",
         "MusicHub.main",
     ]
 

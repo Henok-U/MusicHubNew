@@ -15,18 +15,18 @@ def send_email(subject: str, message: str, to_email: List[str]) -> None:
     """
     Send email from musichub email address to subject or list of subjects
     """
-    try:
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=Common.EMAIL_FROM,
-            recipient_list=to_email,
-            fail_silently=False,
-        )
-    except Exception as e:
-        raise CustomUserException(
-            f"Error during sending email, detail message: {e.message}"
-        )
+    # try:
+    #     send_mail(
+    #         subject=subject,
+    #         message=message,
+    #         from_email=Common.EMAIL_FROM,
+    #         recipient_list=to_email,
+    #         fail_silently=False,
+    #     )
+    # except Exception as e:
+    #     raise CustomUserException(
+    #         f"Error during sending email, detail message: {e.message}"
+    #     )
 
 
 def trim_spaces_from_data(data: str) -> str:

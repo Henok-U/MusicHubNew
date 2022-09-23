@@ -54,7 +54,7 @@ class User(EmailAbstractUser):
         null=False,
         validators=[
             RegexValidator(
-                "^[a-zA-Z][a-zA-Z\-\s]*$",
+                "^[a-zA-Z][a-zA-Z\-\s]*",
                 message="Name not valid: name must start and ends with letter and can contain only ' ' or '-' special characters ",
             )
         ],
@@ -65,7 +65,7 @@ class User(EmailAbstractUser):
         null=False,
         validators=[
             RegexValidator(
-                "^[a-zA-Z][a-zA-Z\-\s]*$",
+                "^[a-zA-Z][a-zA-Z\-\s]*",
                 message="Name not valid: name must start and ends with letter and can contain only ' ' or '-' special characters ",
             )
         ],

@@ -20,8 +20,9 @@ coverage== 6.4.4
 #Database Connection
 psycopg2==2.9.3
 
-#image
+#File managment
 pillow==9.2.0
+tinytag==1.8.1
 
 #production server
 django-storages==1.13.1
@@ -29,7 +30,7 @@ boto3==1.24.61
 gunicorn==20.1.0
 
 
-
+requests==2.28.1
 pydantic==1.10.2
 
 #Social Auth

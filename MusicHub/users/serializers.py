@@ -1,9 +1,9 @@
-from dataclasses import fields
 from django.core.validators import EmailValidator
 from rest_framework import serializers
 
 from ..main.utils import trim_spaces_from_data
 from .models import User
+from .profile_service import validate_old_password, validate_passwords_match
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -28,8 +28,7 @@ class SignupSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
-        if not attrs["password"] == attrs["confirm_password"]:
-            raise serializers.ValidationError("Passwords does not match")
+        validate_passwords_match(attrs)
         return attrs
 
     def to_representation(self, instance):
@@ -56,8 +55,7 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
     )
 
     def validate(self, attrs):
-        if not attrs["password"] == attrs["confirm_password"]:
-            raise serializers.ValidationError("Passwords does not match")
+        validate_passwords_match(attrs)
         return attrs
 
     class Meta:
@@ -83,14 +81,9 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         fields = ["password", "confirm_password", "old_password"]
 
     def validate(self, attrs):
-        if not attrs["password"] == attrs["confirm_password"]:
-            raise serializers.ValidationError("Passwords does not match")
-        if not self.context["user"].check_password(attrs["old_password"]):
-            raise serializers.ValidationError("Invalid old password")
-        if attrs["password"] == attrs["old_password"]:
-            raise serializers.ValidationError(
-                "Old password and new password cannot be the same"
-            )
+        validate_passwords_match(attrs)
+        validate_old_password(attrs, self.context["user"])
+
         return attrs
 
     def update(self, instance, validated_data):

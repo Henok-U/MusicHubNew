@@ -1,6 +1,5 @@
 from drf_yasg import openapi
 
-
 signup_return_schema = {
     "201": openapi.Response(
         description="Successfull creation of user",

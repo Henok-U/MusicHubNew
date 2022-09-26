@@ -1,22 +1,11 @@
-from django.urls import reverse
-from faker import Faker
-from rest_framework.test import APITestCase
+from rest_framework import status
 
-from MusicHub.users.models import User
-
-from .user_factory import UserFactory
-
-fake = Faker()
+from .base_test import AuthorizedApiTestCase
 
 
-class TestChangePassword(APITestCase):
+class TestChangePassword(AuthorizedApiTestCase):
     def setUp(self):
-        # Every test needs access to the request factory.
-        self.url = reverse("change-password")
-        self.user_data = UserFactory()
-        self.user_data.set_password("abcABC123*")
-        self.user_data.save()
-        self.client.force_authenticate(user=self.user_data)
+        self.set_up("change-password")
 
     def test_change_password_success(self):
         data = {
@@ -24,10 +13,8 @@ class TestChangePassword(APITestCase):
             "password": "password123",
             "confirm_password": "password123",
         }
-        response = self.client.patch(self.url, data=data)
-        self.assertEqual(response.status_code, 200)
-        user = User.objects.get(email=self.user_data.email)
-        self.assertTrue(user.check_password("password123"))
+        self.patch_and_assert_equal_status_code(data, status.HTTP_200_OK)
+        self.check_password_match("password123", True)
 
     def test_change_password_wrong_old_password(self):
         data = {
@@ -35,39 +22,31 @@ class TestChangePassword(APITestCase):
             "password": "password123",
             "confirm_password": "password123",
         }
-        response = self.client.patch(self.url, data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
-        self.assertFalse(user.check_password("password123"))
+        self.patch_and_assert_equal_status_code(data, status.HTTP_400_BAD_REQUEST)
+        self.check_password_match("password123", False)
 
         data = {
             "old_password": "            ",
             "password": "password123",
             "confirm_password": "password123",
         }
-        response = self.client.patch(self.url, data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
-        self.assertFalse(user.check_password("password123"))
+        self.patch_and_assert_equal_status_code(data, status.HTTP_400_BAD_REQUEST)
+        self.check_password_match("password123", False)
 
         data = {
             "old_password": "",
             "password": "password123",
             "confirm_password": "password123",
         }
-        response = self.client.patch(self.url, data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
-        self.assertFalse(user.check_password("password123"))
+        self.patch_and_assert_equal_status_code(data, status.HTTP_400_BAD_REQUEST)
+        self.check_password_match("password123", False)
 
         data = {
             "password": "password123",
             "confirm_password": "password123",
         }
-        response = self.client.patch(self.url, data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
-        self.assertFalse(user.check_password("password123"))
+        self.patch_and_assert_equal_status_code(data, status.HTTP_400_BAD_REQUEST)
+        self.check_password_match("password123", False)
 
     def test_change_password_invalid_confrim_or_password(self):
         data = {
@@ -75,26 +54,20 @@ class TestChangePassword(APITestCase):
             "password": "password123",
             "confirm_password": "password1234",
         }
-        response = self.client.patch(self.url, data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
-        self.assertFalse(user.check_password("password123"))
+        self.patch_and_assert_equal_status_code(data, status.HTTP_400_BAD_REQUEST)
+        self.check_password_match("password123", False)
 
         data = {
             "old_password": "abcABC123*",
             "password": "password123",
         }
-        response = self.client.patch(self.url, data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
-        self.assertFalse(user.check_password("password123"))
+        self.patch_and_assert_equal_status_code(data, status.HTTP_400_BAD_REQUEST)
+        self.check_password_match("password123", False)
 
         data = {
             "old_password": "abcABC123*",
             "password": "",
             "confirm_password": "",
         }
-        response = self.client.patch(self.url, data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
-        self.assertFalse(user.check_password("password123"))
+        self.patch_and_assert_equal_status_code(data, status.HTTP_400_BAD_REQUEST)
+        self.check_password_match("password123", False)

@@ -1,23 +1,24 @@
+import email
 from django.core.exceptions import ValidationError
 
 from drf_yasg.utils import swagger_auto_schema
 
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import *
-from rest_framework.generics import GenericAPIView
-from rest_framework.views import APIView
+
 from MusicHub.main.exception_handler import custom_exception_handler
 from MusicHub.users import custom_user_schema
-
 from MusicHub.users.models import User
 from MusicHub.users.serializers import ProfileSerializer
 
 
-class ProfileView(GenericAPIView):
+class ProfileView(RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = None
+    http_method_names = ["get", "patch"]
 
     @swagger_auto_schema(
         manual_parameters=custom_user_schema.profile_parameters,

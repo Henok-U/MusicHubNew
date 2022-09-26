@@ -21,6 +21,7 @@ class TestProfileView(APITestCase):
         self.signin_url = reverse("signin")
 
     def test_successful_profile_view_and_edit(self):
+
         # user signes in first to make any changes
         signin_response = self.client.post(
             self.signin_url,
@@ -35,10 +36,10 @@ class TestProfileView(APITestCase):
 
         # user profile data is available
         get_response = self.client.get(self.profile_url)
+        EXPECTED_RESPONSE_KEYS = ["verified@email.com", "verified", "user"]
+
         self.assertEqual(get_response.status_code, status.HTTP_200_OK)
-        self.assertContains(get_response, "verified@email.com")
-        self.assertContains(get_response, "verified")
-        self.assertContains(get_response, "user")
+        [self.assertContains(get_response, res) for res in EXPECTED_RESPONSE_KEYS]
         self.assertNotContains(get_response, "password")
 
         # user changes profile info
@@ -53,5 +54,8 @@ class TestProfileView(APITestCase):
 
         # check profile data change
         get_response = self.client.get(self.profile_url)
-        self.assertContains(get_response, "Sam")
-        self.assertContains(get_response, "Harris")
+        UPDATED_RESPONSE_KEYS = ["Sam", "Harris"]
+
+        # self.assertContains(get_response, "Sam")
+        # self.assertContains(get_response, "Harris")
+        [self.assertContains(get_response, res) for res in UPDATED_RESPONSE_KEYS]

@@ -3,7 +3,6 @@ from typing import List
 from authemail.models import PasswordResetCode, SignupCode
 from django.core.mail import send_mail
 from django.utils import timezone
-from rest_framework.authtoken.models import Token as SigninToken
 
 from MusicHub.config.settings import Common
 from MusicHub.users.models import User

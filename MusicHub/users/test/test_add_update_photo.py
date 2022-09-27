@@ -2,66 +2,46 @@ import os
 from os.path import join
 from pathlib import Path
 
-from django.urls import reverse
-from faker import Faker
-from rest_framework.test import APITestCase
 
+from .base_test import AuthorizedApiTestCase
 from ..models import User
-from .user_factory import UserFactory
-
-fake = Faker()
 
 
-class TestUserRegistrationAPIView(APITestCase):
+class TestUserRegistrationAPIView(AuthorizedApiTestCase):
     def setUp(self):
-        # Every test needs access to the request factory.
-        self.url = reverse("upload-photo")
-        self.user_data = UserFactory()
+        self.set_up("upload-photo")
+        self.picture = Path(__file__).resolve().parent.parent.parent
+        self.picture = join(os.path.dirname(self.picture), "media/users/avatar/")
 
-    def test_add_and_update_photo_success(self):
-        self.client.force_authenticate(user=self.user_data)
-        picture = Path(__file__).resolve().parent.parent.parent
-        picture = join(os.path.dirname(picture), "media/users/avatar/")
-
-        with open(f"{picture}test.jpg", "rb") as fp:
+    def load_upload_and_get_picture(self, filename, status_code):
+        with open(f"{self.picture}{filename}", "rb") as fp:
             response = self.client.patch(path=self.url, data={"picture": fp})
 
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, status_code)
             user = User.objects.get(email=self.user_data.email)
-            old_picture = user.profile_avatar
+            return user.profile_avatar
 
-        with open(f"{picture}test2.jpg", "rb") as fpp:
-            response = self.client.patch(path=self.url, data={"picture": fpp})
-            self.assertEqual(response.status_code, 200)
-        user = User.objects.get(email=self.user_data.email)
-        new_picture = user.profile_avatar
-        user.profile_avatar.delete()
+    def test_add_and_update_photo_success(self):
+
+        old_picture = self.load_upload_and_get_picture("test.jpg", 200)
+        new_picture = self.load_upload_and_get_picture("test2.jpg", 200)
         self.assertNotEqual(old_picture.name, new_picture.name)
 
+        User.objects.get(email=self.user_data.email).profile_avatar.delete()
+
     def test_add_invalid_photo_format_fail(self):
-        self.client.force_authenticate(user=self.user_data)
-        picture = Path(__file__).resolve().parent.parent.parent
-        picture = join(os.path.dirname(picture), "media/users/avatar/")
 
-        with open(f"{picture}image.jfif", "rb") as fpp:
-
-            response = self.client.patch(path=self.url, data={"picture": fpp})
-
-            self.assertEqual(response.status_code, 400)
+        self.load_upload_and_get_picture("image.jfif", 400)
 
     def test_add_picture_too_big_fail(self):
 
-        self.client.force_authenticate(user=self.user_data)
-        picture = Path(__file__).resolve().parent.parent.parent
-        picture = join(os.path.dirname(picture), "media/users/avatar/")
-        with open(f"{picture}testtt.jpg", "rb") as fppp:
-            response = self.client.patch(path=self.url, data={"picture": fppp})
-
-            self.assertEqual(response.status_code, 400)
+        self.load_upload_and_get_picture("testtt.jpg", 400)
 
     def test_add_picuture_no_body_arguments(self):
-        self.client.force_authenticate(user=self.user_data)
+
         response = self.client.patch(path=self.url, data={"picture": ""})
         self.assertEqual(response.status_code, 400)
+
+        self.load_upload_and_get_picture("testtt.jpg", 400)
         response = self.client.patch(path=self.url)
         self.assertEqual(response.status_code, 400)

@@ -3,7 +3,11 @@ from rest_framework import serializers
 
 from ..main.utils import get_random_string, trim_spaces_from_data
 from .models import User
-from .profile_service import validate_old_password, validate_passwords_match
+from .profile_service import (
+    validate_old_password,
+    validate_passwords_match,
+    validate_picture,
+)
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -114,13 +118,7 @@ class AddChangePictureSerializer(serializers.ModelSerializer):
         fields = ["profile_avatar"]
 
     def validate(self, attrs):
-        picture = attrs["profile_avatar"]
-        # TODO Change this
-        # picture.size is in bytes
-        if picture.size > 3000000:
-            raise serializers.ValidationError(
-                "Picture size can not be greater than 3Mb"
-            )
+        validate_picture(attrs["profile_avatar"])
         return attrs
 
     def save(self, **kwargs):

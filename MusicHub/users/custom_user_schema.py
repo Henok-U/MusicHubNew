@@ -40,7 +40,7 @@ google_oauth_return = {
 
 reset_password_returns = {
     "200": openapi.Response(
-        description="Successfull creation of user",
+        description="Successfull password reset",
         examples={"application/json": {"data": "Success"}},
     ),
     "400": openapi.Response(
@@ -76,7 +76,7 @@ signin_return_schema = {
 
 signup_verify_parameters = [
     openapi.Parameter(
-        "code",
+        "Token",
         openapi.IN_QUERY,
         description="Successful verification\nGET api/accounts/signup/verify/?code=<token>",
         type=openapi.TYPE_STRING,
@@ -116,3 +116,94 @@ signout_verify_response = {
         },
     ),
 }
+
+add_update_picture_body = openapi.Parameter(
+    "picture",
+    openapi.IN_FORM,
+    type=openapi.TYPE_FILE,
+    description="Picture to be uploaded",
+)
+
+add_update_picture_headear = openapi.Parameter(
+    name="Authorization",
+    in_=openapi.IN_HEADER,
+    type=openapi.TYPE_STRING,
+    description="Authorization: token value",
+)
+
+
+add_update_picture_response = {
+    "200": openapi.Response(
+        description="Successful action",
+        examples={"application/json": {"message": "Picture uploaded successfully"}},
+    ),
+    "400": openapi.Response(
+        description="custom Error message",
+        examples={
+            "application/json": {"message": "error message", "status_code": "400"}
+        },
+    ),
+}
+
+profile_get_response = {
+    "200": openapi.Response(
+        description="User profile",
+        examples={
+            "application/json": {
+                "email": "example@mail.com",
+                "first_name": "example_name",
+                "last_name": "example_surname",
+            }
+        },
+    ),
+    "401": openapi.Response(
+        description="User profile",
+        examples={"application/json": {"message": "Invalid token."}},
+    ),
+}
+
+
+profile_parameters = [
+    openapi.Parameter(
+        name="Token",
+        required=True,
+        in_=openapi.IN_HEADER,
+        type=openapi.TYPE_STRING,
+        description="Profile endpoints are avaliable only with token",
+    ),
+]
+
+profile_update_request = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=["first_name", "last_name"],
+    properties={
+        "first_name": openapi.Schema(
+            type=openapi.TYPE_STRING, description="first_name"
+        ),
+        "last_name": openapi.Schema(type=openapi.TYPE_STRING, description="last_name"),
+    },
+)
+
+profile_update_responses = {
+    "200": openapi.Response(
+        description="Update successful",
+        examples={"application/json": {"email": "User Updated succefully"}},
+    ),
+    "401": openapi.Response(
+        description="User profile",
+        examples={
+            "application/json": {
+                "message": "Authentication credentials were not provided."
+            }
+        },
+    ),
+}
+authorization_token = [
+    openapi.Parameter(
+        name="Authorization",
+        required=True,
+        in_=openapi.IN_HEADER,
+        type=openapi.TYPE_STRING,
+        description="Header in format - Authorization: token <token>",
+    ),
+]

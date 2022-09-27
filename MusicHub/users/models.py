@@ -4,8 +4,8 @@ from authemail.models import EmailAbstractUser
 from django.contrib.auth.models import BaseUserManager
 from django.core.validators import (
     EmailValidator,
+    FileExtensionValidator,
     RegexValidator,
-    validate_image_file_extension,
 )
 from django.db import models
 
@@ -95,7 +95,7 @@ class User(EmailAbstractUser):
         upload_to="users/avatar",
         blank=True,
         null=True,
-        validators=[validate_image_file_extension],
+        validators=[FileExtensionValidator(allowed_extensions=["jpg", "jpeg", "png"])],
     )
     followers = models.ManyToManyField("users.User", blank=True, symmetrical=False)
 

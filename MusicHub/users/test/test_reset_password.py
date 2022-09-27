@@ -32,6 +32,8 @@ class TestUserRegistrationAPIView(APITestCase):
         self.assertEqual(response.status_code, 400)
         response = self.client.post(self.url, {"email": "notavalidemail"})
         self.assertEqual(response.status_code, 400)
+        response = self.client.post(self.url, {"email": "notavalidemail@gmail.com"})
+        self.assertEqual(response.status_code, 400)
 
     def test_reset_password_code_expired(self):
         response = self.client.post(self.url, {"email": self.user_data})
@@ -70,3 +72,9 @@ class TestUserRegistrationAPIView(APITestCase):
         self.assertEqual(response.status_code, 400)
         user = User.objects.get(email=self.user_data.email)
         self.assertFalse(user.check_password("newpassword123"))
+
+        response = self.client.put(f"{self.url}")
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.put(f"{self.url}?code=invalidcode")
+        self.assertEqual(response.status_code, 400)

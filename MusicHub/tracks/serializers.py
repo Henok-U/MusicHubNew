@@ -1,4 +1,9 @@
-from rest_framework.serializers import ModelSerializer, ValidationError
+from email.policy import default
+from rest_framework import serializers
+from rest_framework.serializers import (
+    ModelSerializer,
+    ValidationError,
+)
 from .models import Track
 from tinytag import TinyTag
 
@@ -21,3 +26,15 @@ class CreateTrackSerializer(ModelSerializer):
         track.track_length = TinyTag.get(track.track.path).duration
         track.save()
         return track
+
+
+class ListTrackSerializer(ModelSerializer):
+    created_at = serializers.DateTimeField(format="%d-%m-%Y %H:%M:%S")
+    playlist = serializers.PrimaryKeyRelatedField(
+        many=False, read_only="True", default=None
+    )
+    # playlist = models.OneToOneField(User, related_name='profile')
+
+    class Meta:
+        model = Track
+        fields = ["id", "filename", "track_length", "created_at", "public", "playlist"]

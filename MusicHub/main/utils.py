@@ -6,6 +6,8 @@ from authemail.models import PasswordResetCode, SignupCode
 from django.core.mail import send_mail
 from django.utils import timezone
 
+from rest_framework.pagination import PageNumberPagination
+
 from MusicHub.config.settings import Common
 from MusicHub.users.models import User
 
@@ -103,3 +105,14 @@ def create_or_return_user(backend, response, *args, **kwargs):
 def get_random_string(length):
     letters = string.ascii_lowercase
     return "".join(random.choice(letters) for i in range(length))
+
+
+class LargeResultsSetPagination(PageNumberPagination):
+    """
+    Overrides default pagination class provided in settings.py,
+    inside REST_FRAMEWORK dictionary.
+    """
+
+    page_size = 40
+    page_size_query_parameter = "page_size"
+    max_page_size = 40

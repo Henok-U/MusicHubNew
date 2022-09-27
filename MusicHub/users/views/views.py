@@ -41,13 +41,13 @@ class SignUpView(GenericAPIView):
 
     @swagger_auto_schema(responses=custom_user_schema.signup_return_schema)
     def post(self, request, *args, **kwargs):
-        queryset = User.objects.filter(email=request.data["email"])
+        queryset = User.objects.filter(email=request.data.get("email"))
 
         if queryset.exists():
             if queryset.get().is_verified:
                 raise CustomUserException("Provided email address is already in use")
 
-            if has_token_expired(SignupCode.objects.get(user=queryset.get()), 24):
+            if has_token_expired(SignupCode.objects.get(user=queryset.get())):
                 signup_code = SignupCode.objects.get(user=queryset.get())
                 signup_code.delete()
                 verification_email(queryset.get(), request)

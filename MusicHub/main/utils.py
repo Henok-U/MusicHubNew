@@ -56,9 +56,9 @@ def reset_password_email(user):
     )
 
 
-def has_token_expired(token, time):
-    diff = timezone.now() - token.created_at
-    if diff.days * 24 > time:
+def has_token_expired(token):
+    time = token.created_at + timezone.timedelta(days=1)
+    if time < timezone.now():
         return True
     return False
 
@@ -70,7 +70,7 @@ def check_code_for_verification(
         verifiation_code = objectModel.objects.get(code=code)
     except objectModel.DoesNotExist:
         raise CustomUserException("Verification code is not a valid code")
-    if has_token_expired(verifiation_code, 24):
+    if has_token_expired(verifiation_code):
         raise CustomUserException("Token has expired.")
 
     return verifiation_code
@@ -93,5 +93,6 @@ def create_or_return_user(backend, response, *args, **kwargs):
             first_name=response["given_name"],
             last_name=response["family_name"],
             password="",
+            is_verified=True,
         )
         return user

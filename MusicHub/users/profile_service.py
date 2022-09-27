@@ -1,6 +1,6 @@
 from rest_framework.serializers import ValidationError
 
-MAX_PICTURE_SIZE = 3000000  # value in bytes, max 3Mb
+MAX_PICTURE_SIZE = 3_000_000  # value in bytes, max 3Mb
 
 
 def validate_passwords_match(data):

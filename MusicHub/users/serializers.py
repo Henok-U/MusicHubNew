@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from ..main.utils import get_random_string, trim_spaces_from_data
 from .models import User
+from .profile_service import validate_old_password, validate_passwords_match
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -27,8 +28,7 @@ class SignupSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
-        if not attrs["password"] == attrs["confirm_password"]:
-            raise serializers.ValidationError("Passwords does not match")
+        validate_passwords_match(attrs)
         return attrs
 
     def to_representation(self, instance):
@@ -55,8 +55,7 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
     )
 
     def validate(self, attrs):
-        if not attrs["password"] == attrs["confirm_password"]:
-            raise serializers.ValidationError("Passwords does not match")
+        validate_passwords_match(attrs)
         return attrs
 
     class Meta:
@@ -66,6 +65,31 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
             "password": {"write_only": True},
             "confirm_password": {"write_only": True},
         }
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+
+    old_password = serializers.CharField(
+        max_length=100,
+    )
+    confirm_password = serializers.CharField(
+        max_length=100,
+    )
+
+    class Meta:
+        model = User
+        fields = ["password", "confirm_password", "old_password"]
+
+    def validate(self, attrs):
+        validate_passwords_match(attrs)
+        validate_old_password(attrs, self.context["user"])
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data["password"])
+        instance.save()
+        return instance
 
 
 class ResetPasswordEmailSerializer(serializers.Serializer):
@@ -91,6 +115,7 @@ class AddChangePictureSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         picture = attrs["profile_avatar"]
+        # TODO Change this
         # picture.size is in bytes
         if picture.size > 3000000:
             raise serializers.ValidationError(
@@ -103,3 +128,10 @@ class AddChangePictureSerializer(serializers.ModelSerializer):
         random = get_random_string(10)
         self.initial_data["profile_avatar"].name = f"{random}.{name.split('.')[-1]}"
         return super().save(**kwargs)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name"]
+        extra_kwargs = {"email": {"read_only": True}}

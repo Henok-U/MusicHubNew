@@ -1,6 +1,12 @@
 from django.urls import path
 
-from .views.profile_view import AddUpdateProfilePicture
+from MusicHub.users.views.profile_view import (
+    ChangePassword,
+    ProfileView,
+    AddUpdateProfilePicture,
+)
+
+
 from .views.views import (
     RecoverPassword,
     SignInView,
@@ -19,4 +25,6 @@ urlpatterns = [
     path("signin-social/<str:backend>/", social_sign_google, name="signin-google"),
     # profile urls
     path("upload-photo/", AddUpdateProfilePicture.as_view(), name="upload-photo"),
+    path("profile/", ProfileView.as_view(), name="profile"),
+    path("change-password/", ChangePassword.as_view(), name="change-password"),
 ]

@@ -109,7 +109,7 @@ class TestSigninSignoutAPIView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data["detail"], "Inactive user account.")
 
-    def test_sigout_no_token(self):
+    def test_signout_no_token(self):
         response = self.client.get(self.signout_url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

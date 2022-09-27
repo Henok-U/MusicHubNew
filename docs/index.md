@@ -1,8 +1,8 @@
 # Music Hub Project
 
- A new Music Hub Project.
+  Internship project using django and django rest framework to create a music hub application.
 
- Check out the project's [documentation](https://github.com/Henok-U/MusicHubNew).
+ To see more information about API endpoints and test them, chceck [API documentation](http://3.71.253.142/doc/swagger).
 
  Visit production [server](http://3.71.253.142/).
 # Prerequisites
@@ -12,18 +12,21 @@
 # Initialize the project
 
 Start the postgres container for local development:
-WINDOWS:
+
+
 
 ```bash
 docker-compose up
 ```
 Create virtual enviroment and install requirements:
 
+
 ```bash
 python -m venv env
 env\Scripts\activate
 pip install -r requirements.txt
 ```
+
 Make migrations and create super user
 
 ```bash

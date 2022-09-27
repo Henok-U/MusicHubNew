@@ -1,9 +1,13 @@
 from django.core.validators import EmailValidator
 from rest_framework import serializers
 
-from ..main.utils import trim_spaces_from_data
+from ..main.utils import get_random_string, trim_spaces_from_data
 from .models import User
-from .profile_service import validate_old_password, validate_passwords_match
+from .profile_service import (
+    validate_old_password,
+    validate_passwords_match,
+    validate_picture,
+)
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -106,6 +110,22 @@ class ResetPasswordEmailSerializer(serializers.Serializer):
 
 class SocialAuthSerializer(serializers.Serializer):
     access_token = serializers.CharField(max_length=250, allow_blank=False)
+
+
+class AddChangePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["profile_avatar"]
+
+    def validate(self, attrs):
+        validate_picture(attrs["profile_avatar"])
+        return attrs
+
+    def save(self, **kwargs):
+        name = self.initial_data["profile_avatar"].name
+        random = get_random_string(10)
+        self.initial_data["profile_avatar"].name = f"{random}.{name.split('.')[-1]}"
+        return super().save(**kwargs)
 
 
 class ProfileSerializer(serializers.ModelSerializer):

@@ -117,6 +117,34 @@ signout_verify_response = {
     ),
 }
 
+add_update_picture_body = openapi.Parameter(
+    "picture",
+    openapi.IN_FORM,
+    type=openapi.TYPE_FILE,
+    description="Picture to be uploaded",
+)
+
+add_update_picture_headear = openapi.Parameter(
+    name="Authorization",
+    in_=openapi.IN_HEADER,
+    type=openapi.TYPE_STRING,
+    description="Authorization: token value",
+)
+
+
+add_update_picture_response = {
+    "200": openapi.Response(
+        description="Successful action",
+        examples={"application/json": {"message": "Picture uploaded successfully"}},
+    ),
+    "400": openapi.Response(
+        description="custom Error message",
+        examples={
+            "application/json": {"message": "error message", "status_code": "400"}
+        },
+    ),
+}
+
 profile_get_response = {
     "200": openapi.Response(
         description="User profile",

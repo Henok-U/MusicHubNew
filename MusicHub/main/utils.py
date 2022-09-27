@@ -1,3 +1,5 @@
+import random
+import string
 from typing import List
 
 from authemail.models import PasswordResetCode, SignupCode
@@ -96,3 +98,8 @@ def create_or_return_user(backend, response, *args, **kwargs):
             is_verified=True,
         )
         return user
+
+
+def get_random_string(length):
+    letters = string.ascii_lowercase
+    return "".join(random.choice(letters) for i in range(length))

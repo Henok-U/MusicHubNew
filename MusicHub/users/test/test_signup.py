@@ -1,4 +1,3 @@
-import email
 from authemail.models import SignupCode
 from django.urls import reverse
 from django.utils import timezone
@@ -6,7 +5,6 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from MusicHub.users.models import User
-from .user_factory import UserFactory
 
 
 class TestUserRegistrationAPIView(APITestCase):

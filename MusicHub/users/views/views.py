@@ -2,13 +2,11 @@ from authemail.models import PasswordResetCode, SignupCode
 from authemail.views import SignupVerify
 from django.contrib.auth import authenticate
 from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.decorators import method_decorator
-from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token as SigninToken
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from social_core.exceptions import AuthForbidden
@@ -21,16 +19,16 @@ from MusicHub.main.utils import (
     verification_email,
 )
 
-from ..main.exception_handler import CustomUserException
-from .models import User
-from .serializers import (
+from ...main.exception_handler import CustomUserException
+from .. import custom_user_schema
+from ..models import User
+from ..serializers import (
     ResetPasswordEmailSerializer,
     ResetPasswordSerializer,
     SigninSerializer,
     SignupSerializer,
     SocialAuthSerializer,
 )
-from . import custom_user_schema
 
 
 class SignUpView(GenericAPIView):
@@ -208,10 +206,6 @@ def social_sign_google(request, backend):
     If no user is associated with google token data, user will be created
     otherwise, user will be logged in
     """
-
-    if not backend == "google-oauth2":
-        raise CustomUserException("Given backend provider is not valid")
-
     serializer = SocialAuthSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         try:
@@ -221,5 +215,3 @@ def social_sign_google(request, backend):
         token, created = SigninToken.objects.get_or_create(user=user)
 
         return Response(status=200, data={"token": token.key})
-
-    return Response(status=400, data="Error during signing")

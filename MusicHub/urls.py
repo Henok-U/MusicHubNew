@@ -19,8 +19,6 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from MusicHub.main.views import is_server_working
-
 schema_view = get_schema_view(
     openapi.Info(
         title="MusicHub API docs",
@@ -37,7 +35,6 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/test/", is_server_working),
     path("api/user/", include("MusicHub.users.urls")),
     path("api/track/", include("MusicHub.tracks.urls")),
     # swagger api doc paths

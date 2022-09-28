@@ -1,9 +1,10 @@
+import random
+import string
 from typing import List
 
 from authemail.models import PasswordResetCode, SignupCode
 from django.core.mail import send_mail
 from django.utils import timezone
-from rest_framework.authtoken.models import Token as SigninToken
 
 from MusicHub.config.settings import Common
 from MusicHub.users.models import User
@@ -97,3 +98,8 @@ def create_or_return_user(backend, response, *args, **kwargs):
             is_verified=True,
         )
         return user
+
+
+def get_random_string(length):
+    letters = string.ascii_lowercase
+    return "".join(random.choice(letters) for i in range(length))

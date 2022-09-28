@@ -1,8 +1,13 @@
 from django.core.validators import EmailValidator
 from rest_framework import serializers
 
-from ..main.utils import trim_spaces_from_data
+from ..main.utils import get_random_string, trim_spaces_from_data
 from .models import User
+from .profile_service import (
+    validate_old_password,
+    validate_passwords_match,
+    validate_picture,
+)
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -27,8 +32,7 @@ class SignupSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
-        if not attrs["password"] == attrs["confirm_password"]:
-            raise serializers.ValidationError("Passwords does not match")
+        validate_passwords_match(attrs)
         return attrs
 
     def to_representation(self, instance):
@@ -55,8 +59,7 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
     )
 
     def validate(self, attrs):
-        if not attrs["password"] == attrs["confirm_password"]:
-            raise serializers.ValidationError("Passwords does not match")
+        validate_passwords_match(attrs)
         return attrs
 
     class Meta:
@@ -66,6 +69,31 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
             "password": {"write_only": True},
             "confirm_password": {"write_only": True},
         }
+
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+
+    old_password = serializers.CharField(
+        max_length=100,
+    )
+    confirm_password = serializers.CharField(
+        max_length=100,
+    )
+
+    class Meta:
+        model = User
+        fields = ["password", "confirm_password", "old_password"]
+
+    def validate(self, attrs):
+        validate_passwords_match(attrs)
+        validate_old_password(attrs, self.context["user"])
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data["password"])
+        instance.save()
+        return instance
 
 
 class ResetPasswordEmailSerializer(serializers.Serializer):
@@ -82,3 +110,26 @@ class ResetPasswordEmailSerializer(serializers.Serializer):
 
 class SocialAuthSerializer(serializers.Serializer):
     access_token = serializers.CharField(max_length=250, allow_blank=False)
+
+
+class AddChangePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["profile_avatar"]
+
+    def validate(self, attrs):
+        validate_picture(attrs["profile_avatar"])
+        return attrs
+
+    def save(self, **kwargs):
+        name = self.initial_data["profile_avatar"].name
+        random = get_random_string(10)
+        self.initial_data["profile_avatar"].name = f"{random}.{name.split('.')[-1]}"
+        return super().save(**kwargs)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name"]
+        extra_kwargs = {"email": {"read_only": True}}

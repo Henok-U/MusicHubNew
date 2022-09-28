@@ -38,3 +38,11 @@ class TestUserSignInGoogleAPIView(APITestCase):
         data2 = {}
         response = self.client.post("/api/user/signin-social/google-oauth2/", data2)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        data = {"access_token": self.access_token}
+        self.client.post("/api/user/signin-social/facebook-oauth/", data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        data = {"access_token": ""}
+        response = self.client.post("/api/user/signin-social/google-oauth2/", data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

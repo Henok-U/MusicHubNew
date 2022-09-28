@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, ValidationError
 from .models import Track
-from tinytag import TinyTag
+from mutagen.mp3 import MP3
 
 MAX_FILE_SIZE = 30_000_000  # values in bytes, max 30Mb
 
@@ -16,10 +16,10 @@ class CreateTrackSerializer(ModelSerializer):
         return value
 
     def create(self, validated_data):
-
+        validated_data["track_length"] = int(
+            MP3(validated_data.get("track")).info.length
+        )
         track = Track.objects.create(
             created_by=self.context.get("user"), **validated_data
         )
-        track.track_length = TinyTag.get(track.track.path).duration
-        track.save()
         return track

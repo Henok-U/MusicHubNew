@@ -2,6 +2,8 @@ from rest_framework.serializers import ModelSerializer, ValidationError
 from .models import Track
 from tinytag import TinyTag
 
+MAX_FILE_SIZE = 30_000_000  # values in bytes, max 30Mb
+
 
 class CreateTrackSerializer(ModelSerializer):
     class Meta:
@@ -9,7 +11,7 @@ class CreateTrackSerializer(ModelSerializer):
         fields = ["filename", "track"]
 
     def validate_track(self, value):
-        if value.size > 30000000:
+        if value.size > MAX_FILE_SIZE:
             raise ValidationError("File cannot be bigger than 30 Mb")
         return value
 

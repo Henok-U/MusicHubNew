@@ -52,10 +52,12 @@ class Common(Configuration):
         "django_filters",
         "drf_yasg",
         "social_django",
+        # "django_clamav",
         # apps
         "MusicHub.users",
         "MusicHub.tracks",
         "MusicHub.main",
+        "MusicHub.antivirusProvider",
     ]
 
     MIDDLEWARE = [
@@ -257,3 +259,5 @@ class Common(Configuration):
     )
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False
+
+    ANTIVIRUS_API_KEY = os.getenv("ANTIVIRUS_API_KEY")

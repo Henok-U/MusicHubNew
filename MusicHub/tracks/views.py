@@ -24,6 +24,7 @@ class UploadTrackView(CreateAPIView):
         auto_schema=custom_track_schema.CustomAutoSchema,
         manual_parameters=[
             custom_track_schema.TOKEN_PARAMETER,
+            custom_track_schema.public_body_parameter,
         ],
         responses=custom_track_schema.basic_response(
             201, "Track uploaded successfully"

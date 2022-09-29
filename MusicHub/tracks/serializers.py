@@ -10,7 +10,8 @@ class CreateTrackSerializer(ModelSerializer):
     class Meta:
 
         model = Track
-        fields = ["filename", "track"]
+        fields = ["filename", "id", "track", "public"]
+        extra_kwargs = {"id": {"read_only": True}}
 
     def validate_track(self, value):
         if value.size >= MAX_FILE_SIZE:

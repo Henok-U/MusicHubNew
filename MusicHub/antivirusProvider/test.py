@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from MusicHub.antivirusProvider.custom_exception import CustomAntiVirusException
+
 from .service import AntivirusScan
 
 FILE_MALICIOUS = "File is malicius or suspicious, cannot upload it"

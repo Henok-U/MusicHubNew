@@ -1,8 +1,11 @@
-from time import sleep
-from MusicHub.antivirusProvider.custom_exception import CustomAntiVirusException
-from ..config.settings import Common
-import requests
 import json
+from time import sleep
+
+import requests
+
+from MusicHub.antivirusProvider.custom_exception import CustomAntiVirusException
+
+from ..config.settings import Common
 
 
 class AntivirusScan:

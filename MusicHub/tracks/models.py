@@ -1,9 +1,10 @@
-from django.db import models
-from django.core.validators import RegexValidator, FileExtensionValidator
 import os
-from ..config.settings import Common
-
 from uuid import uuid4
+
+from django.core.validators import FileExtensionValidator, RegexValidator
+from django.db import models
+
+from ..config.settings import Common
 
 
 def get_upload_path(instance, filename):

@@ -261,3 +261,7 @@ class Common(Configuration):
     EMAIL_USE_SSL = False
 
     ANTIVIRUS_API_KEY = os.getenv("ANTIVIRUS_API_KEY")
+
+    SWAGGER_SETTINGS = {
+        "DEFAULT_MODEL_RENDERING": "example",
+    }

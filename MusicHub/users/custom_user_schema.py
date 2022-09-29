@@ -154,17 +154,6 @@ profile_get_response = {
     ),
 }
 
-
-profile_parameters = [
-    openapi.Parameter(
-        name="Token",
-        required=True,
-        in_=openapi.IN_HEADER,
-        type=openapi.TYPE_STRING,
-        description="Profile endpoints are avaliable only with token",
-    ),
-]
-
 profile_update_request = openapi.Schema(
     type=openapi.TYPE_OBJECT,
     required=["first_name", "last_name"],

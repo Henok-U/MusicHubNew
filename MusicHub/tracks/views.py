@@ -1,5 +1,9 @@
-from rest_framework import generics, viewsets, status
-from rest_framework.decorators import action
+from django.utils.decorators import method_decorator
+
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -29,6 +33,23 @@ class UploadTrackView(generics.CreateAPIView):
         return Response(status=201, data=serializer.data)
 
 
+params = [
+    openapi.Parameter(
+        name="Authorization",
+        required=True,
+        type=openapi.TYPE_STRING,
+        in_=openapi.IN_HEADER,
+        description="Header in format - Authorization: Token <token>",
+    )
+]
+
+
+@method_decorator(
+    name="get",
+    decorator=swagger_auto_schema(
+        manual_parameters=params,
+    ),
+)
 class ListTracksView(generics.ListAPIView):
     """
     View for listing tracks owned by user
@@ -43,13 +64,20 @@ class ListTracksView(generics.ListAPIView):
     pagination_class = LargeResultsSetPagination
 
 
+@method_decorator(
+    name="delete",
+    decorator=swagger_auto_schema(
+        manual_parameters=params,
+    ),
+)
 class DeleteOneTrackView(generics.DestroyAPIView):
     """
     View for deleting tracks owned by user
+    provided id of track
     """
 
     def get_queryset(self):
-        track = Track.objects.filter(created_by=self.request.user)
+        track = Track.objects.all()
         return track
 
     permission_classes = [IsAuthenticated]

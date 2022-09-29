@@ -123,7 +123,7 @@ class SignOutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     @swagger_auto_schema(
-        manual_parameters=custom_user_schema.signout_parameters,
+        manual_parameters=custom_user_schema.authorization_token,
         responses=custom_user_schema.signout_verify_response,
     )
     def get(self, request, *args, **kwargs):

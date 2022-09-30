@@ -1,14 +1,13 @@
 from django.utils.decorators import method_decorator
 
-from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.request import Request
 from rest_framework.response import Response
 
 from MusicHub.main.utils import LargeResultsSetPagination
+from MusicHub.tracks import custom_track_schema
 from MusicHub.tracks.models import Track
 from MusicHub.tracks.serializers import (
     CreateTrackSerializer,
@@ -33,21 +32,13 @@ class UploadTrackView(generics.CreateAPIView):
         return Response(status=201, data=serializer.data)
 
 
-params = [
-    openapi.Parameter(
-        name="Authorization",
-        required=True,
-        type=openapi.TYPE_STRING,
-        in_=openapi.IN_HEADER,
-        description="Header in format - Authorization: Token <token>",
-    )
-]
-
-
 @method_decorator(
     name="get",
     decorator=swagger_auto_schema(
-        manual_parameters=params,
+        manual_parameters=[custom_track_schema.TOKEN_PARAMETER],
+        responses=custom_track_schema.basic_response(
+            "200", custom_track_schema.list_example
+        ),
     ),
 )
 class ListTracksView(generics.ListAPIView):
@@ -64,12 +55,6 @@ class ListTracksView(generics.ListAPIView):
     pagination_class = LargeResultsSetPagination
 
 
-@method_decorator(
-    name="delete",
-    decorator=swagger_auto_schema(
-        manual_parameters=params,
-    ),
-)
 class DeleteOneTrackView(generics.DestroyAPIView):
     """
     View for deleting tracks owned by user
@@ -83,6 +68,14 @@ class DeleteOneTrackView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ListTrackSerializer
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            custom_track_schema.TOKEN_PARAMETER,
+        ],
+        responses=custom_track_schema.basic_response(
+            "200", "Track deleted successfully"
+        ),
+    )
     def delete(self, request, *args, **kwargs):
         try:
             track = self.get_object()

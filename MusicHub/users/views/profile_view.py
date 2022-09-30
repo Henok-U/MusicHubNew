@@ -91,6 +91,9 @@ class AddUpdateProfilePicture(GenericAPIView):
 
     """
 
+    def get_serializer(self, *args, **kwargs):
+        pass
+
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser]
 

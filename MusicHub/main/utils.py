@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from MusicHub.config.settings import Common
 from MusicHub.users.models import User
-
+from django.conf import settings
 from .exception_handler import CustomUserException
 
 
@@ -44,7 +44,7 @@ def verification_email(user, request):
     signup_code = SignupCode.objects.create_signup_code(user, ipaddr)
     send_email(
         subject="Verify email account: ",
-        message=f"http://localhost:8000/api/user/signup/verify/?code={signup_code}",
+        message=f"{settings.EMAIL_LINK_PATH}/api/user/signup/verify/?code={signup_code}",
         to_email=[user.email],
     )
 
@@ -53,7 +53,7 @@ def reset_password_email(user):
     reset_code = PasswordResetCode.objects.create_password_reset_code(user)
     send_email(
         subject="Reset account password link: ",
-        message=f"http://localhost:8000/api/user/reset-password/?code={reset_code}",
+        message=f"{settings.EMAIL_LINK_PATH}/api/user/reset-password/?code={reset_code}",
         to_email=[user.email],
     )
 

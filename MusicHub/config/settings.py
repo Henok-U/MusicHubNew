@@ -256,3 +256,4 @@ class Common(Configuration):
     )
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False
+    EMAIL_LINK_PATH = ""

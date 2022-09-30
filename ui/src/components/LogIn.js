@@ -10,7 +10,7 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import GoogleIcon from '@mui/icons-material/Google';
+import GoogleSign from './GoogleSign';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -122,17 +122,7 @@ export default function SignIn() {
                         >
                             Sign In
                         </Button>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="outlined"
-                            sx={{ mt: 1, mb: 2, pt: 2, pb: 2 }}
-                        >
-                            {/* <Avatar sx={{ mr: 3, bgcolor: 'secondary.main' }}> */}
-                            <GoogleIcon sx={{ mr: 3 }} />
-                            {/* </Avatar> */}
-                            Sign In with Google
-                        </Button>
+                        <GoogleSign/>
 
                         <Grid container>
                             <Grid item xs>

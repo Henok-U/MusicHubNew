@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Header from "../components/Header";
 import axios from "../Axios";
 import { UseSnackbarQueue } from "../components/Snackbar";
+import GoogleSign from "../components/GoogleSign";
 const theme = createTheme();
 
 export default function SignUp() {
@@ -154,6 +155,7 @@ export default function SignUp() {
             >
               Sign Up
             </Button>
+            <GoogleSign/>
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="/login/" variant="body2">

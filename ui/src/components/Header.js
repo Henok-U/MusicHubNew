@@ -6,8 +6,9 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import Link from '@mui/material/Link'
 export default function ButtonAppBar() {
-    
+
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -22,14 +23,21 @@ export default function ButtonAppBar() {
           >
             <MenuIcon />
           </IconButton>
-          
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} >
-            MusicHub
-                  </Typography>
-                    <Button color="inherit" href="/login/">Login</Button>
-                    <Button color="inherit" href="/register/">Register</Button>
+
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Link underline="none" href="/">MusicHub</Link>
+          </Typography>
+
+          <Link underline="none" href="/login/">
+            <Button variant="contained" color="inherit" >Login</Button>
+          </Link>
+
+          {/* <Link underline="none" href="/register/"> */}
+          <Button href="/register/" variant="contained" color="inherit" >Register</Button>
+          {/* </Link> */}
+
         </Toolbar>
       </AppBar>
-    </Box>
+    </Box >
   );
 }

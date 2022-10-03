@@ -17,8 +17,8 @@ class CustomApiTestCase(APITestCase):
         self.assertEqual(response.status_code, status_code)
         return response
 
-    def get_and_assert_equal_status_code(self, data, status_code):
-        response = self.client.patch(self.url, data=data)
+    def get_and_assert_equal_status_code(self, status_code):
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, status_code)
         return response
 

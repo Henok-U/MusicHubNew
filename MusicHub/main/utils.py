@@ -1,17 +1,13 @@
-import os
 import random
-import shutil
 import string
 from typing import List
-
 
 from authemail.models import PasswordResetCode, SignupCode
 from django.core.mail import send_mail
 from django.utils import timezone
-
 from rest_framework.pagination import PageNumberPagination
 
-from MusicHub.config.settings import Common, BASE_DIR
+from MusicHub.config.settings import Common
 from MusicHub.users.models import User
 
 from .exception_handler import CustomUserException
@@ -121,16 +117,13 @@ class LargeResultsSetPagination(PageNumberPagination):
     max_page_size = 40
 
 
-def format_to_minutes(sec):
-    minutes = str(sec // 60)
-    seconds = str(sec % 60)
-    return minutes + ":" + seconds
-
-
-def delete_generated_files_testing_tracks():
-    tracks_path = os.path.join(
-        os.path.dirname(BASE_DIR),
-        "media",
-        "tracks",
-    )
-    shutil.rmtree(tracks_path)
+def format_sec_to_mins(sec):
+    if type(sec) == int:
+        try:
+            minutes = str(sec // 60)
+            seconds = str(sec % 60)
+            return minutes + ":" + seconds
+        except TypeError:
+            return "Invalid track length"
+    elif sec == None:
+        return "0:00"

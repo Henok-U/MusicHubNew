@@ -8,9 +8,9 @@ class TrackAdmin(admin.ModelAdmin):
     fields = (
         "filename",
         "id",
-        "track",
+        "file",
         "track_length",
-        "public",
+        "is_public",
         "created_at",
         "created_by",
     )

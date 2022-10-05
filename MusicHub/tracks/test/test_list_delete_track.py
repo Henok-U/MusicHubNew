@@ -1,5 +1,6 @@
 from rest_framework import status
-from MusicHub.main.utils import delete_generated_files_testing_tracks
+
+from MusicHub.tracks.test.test_utils import delete_generated_files_testing_tracks
 
 from MusicHub.tracks.test.track_factory import TrackFactory
 from MusicHub.users.test.base_test import AuthorizedApiTestCase
@@ -10,7 +11,7 @@ class TestViewDeleteTrack(AuthorizedApiTestCase):
         self.set_up("list-track")
         self.data = TrackFactory(created_by=self.user_data)
 
-        delete_generated_files_testing_tracks()
+        delete_generated_files_testing_tracks(self.user_data.email)
 
     def test_list_tracks(self):
         self.get_and_assert_equal_status_code(status.HTTP_200_OK)

@@ -9,8 +9,8 @@ class TrackFactory(factory.django.DjangoModelFactory):
 
     id = factory.Faker("uuid4")
     filename = "Track 01 - track"
-    created_by = factory.SubFactory(UserFactory) or ""
-    track = factory.django.FileField(filename="test.mp3")
+    created_by = factory.SubFactory(UserFactory)
+    file = factory.django.FileField(filename="test.mp3")
     track_length = 145
 
     @classmethod

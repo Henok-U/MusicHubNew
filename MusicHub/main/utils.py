@@ -103,3 +103,17 @@ def create_or_return_user(backend, response, *args, **kwargs):
 def get_random_string(length):
     letters = string.ascii_lowercase
     return "".join(random.choice(letters) for i in range(length))
+
+
+def remove_fields_from_serializer_to_schema(excluded_fields):
+    def decorator(fn):
+        def wraper(*args, **kwargs):
+            fields = fn(*args, **kwargs)
+            for item in excluded_fields:
+                if item in fields.keys():
+                    fields.pop(item)
+            return fields
+
+        return wraper
+
+    return decorator

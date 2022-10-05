@@ -1,16 +1,20 @@
-import json
 from time import sleep
-
+import json
 import requests
 
 from MusicHub.antivirusProvider.custom_exception import CustomAntiVirusException
 
 from ..config.settings import Common
+from .constants import (
+    AntivirusStatuses,
+    CHECK_PROGRESS_DELAY_SECONDS,
+    PROGRES_PERCENTAGE,
+)
 
 
 class AntivirusScan:
     def __init__(self):
-        self.file_url = "https://api.metadefender.com/v4/file/"
+        self.file_url = Common.ANTIVIRUS_BASE_URL
         self.post_headers = {
             "Content-Type": "application/octet-stream",
             "apikey": Common.ANTIVIRUS_API_KEY,
@@ -20,33 +24,41 @@ class AntivirusScan:
             "x-file-metadata": "1",
         }
         self.bad_status = (
-            1,  # "Infected/Known",
-            2,  # "Suspicious",
-            18,  # "Potentially Vulnerable File",
+            AntivirusStatuses.INFECTED,
+            AntivirusStatuses.SUSPICIOUS,
+            AntivirusStatuses.POTENTIALY_VULNERABLE_FILE,
         )
         self.failed_scan_status = (
-            3,  # "Failed To Scan",
-            11,  # "Aborted",
-            10,  # "Not Scanned / No scan results",
-            19,  # "Canceled",
+            AntivirusStatuses.FAILED_TO_SCAN,
+            AntivirusStatuses.ABORTED,
+            AntivirusStatuses.NOT_SCANNED,
+            AntivirusStatuses.CANCELED,
         )
-        self.not_supported_status = 23  # "Filetype not supported"
+        self.not_supported_status = AntivirusStatuses.FILETYPE_NOT_SUPPORTED
 
     def scan_file_for_malicious_content(self, track):
 
-        response = self.sent_request(self.post_headers, "post", track=track)
+        response = self.sent_request(self.post_headers, "post", file=track)
 
+        response = self.wait_for_progress_finished(response)
+
+        self.check_result(response.get("scan_results").get("scan_all_result_i"))
+
+    def wait_for_progress_finished(self, response):
         response = self.sent_request(
             self.get_headers, "get", data_id=response.get("data_id")
         )
-        while not response.get("scan_results").get("progress_percentage") == 100:
-            sleep(1)
+        while (
+            not response.get("scan_results").get("progress_percentage")
+            == PROGRES_PERCENTAGE
+        ):
+            sleep(CHECK_PROGRESS_DELAY_SECONDS)
             response = self.sent_request(
                 self.get_headers, "get", data_id=response.get("data_id")
             )
-        self.check_result(response.get("scan_results").get("scan_all_result_i"))
+        return response
 
-    def sent_request(self, headers, request_type, track=None, data_id=None):
+    def sent_request(self, headers, request_type, file=None, data_id=None):
         try:
             if request_type == "get":
                 return json.loads(
@@ -54,7 +66,7 @@ class AntivirusScan:
                 )
             else:
                 return json.loads(
-                    requests.post(f"{self.file_url}", data=track, headers=headers).text
+                    requests.post(f"{self.file_url}", data=file, headers=headers).text
                 )
         except Exception:
             raise CustomAntiVirusException(

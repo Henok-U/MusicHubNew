@@ -4,7 +4,14 @@ from MusicHub.tracks.models import Track
 
 
 class TrackAdmin(admin.ModelAdmin):
-    readonly_fields = ("id", "created_at", "created_by")
+    def regroup_by(self):
+        return "category"
+
+    list_display = ("filename", "created_by", "track_length", "is_public")
+    list_filter = ("created_by", "is_public")
+    readonly_fields = ("id", "created_at", "created_by", "track_length")
+    ordering = ("created_by",)
+    search_fields = ["filename", "created_by"]
     fields = (
         "filename",
         "id",

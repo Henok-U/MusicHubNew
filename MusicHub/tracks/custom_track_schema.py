@@ -1,4 +1,5 @@
 from drf_yasg import openapi
+
 from drf_yasg.inspectors import SwaggerAutoSchema
 
 
@@ -41,8 +42,8 @@ list_example = {
         {
             "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
             "filename": "string",
-            "track_length": 2147483647,
-            "created_at": "2022-09-30T06:15:48.329Z",
+            "track_length": "02:00",
+            "created_at": "05:51:2022",
             "public": "true",
             "playlist": "string",
         }

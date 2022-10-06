@@ -11,7 +11,8 @@ from .models import Track
 class CreateTrackSerializer(ModelSerializer):
     class Meta:
         model = Track
-        fields = ["filename", "track"]
+        fields = ["filename", "id", "track", "public"]
+        extra_kwargs = {"id": {"read_only": True}}
 
     def to_internal_value(self, data):
         data["filename"] = data.get("track").name

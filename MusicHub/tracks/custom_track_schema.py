@@ -23,3 +23,12 @@ def basic_response(success_status_code, success_message):
             },
         ),
     }
+
+
+public_body_parameter = openapi.Parameter(
+    name="public",
+    in_=openapi.IN_FORM,
+    type=openapi.TYPE_BOOLEAN,
+    description="make track private or public",
+    required=True,
+)

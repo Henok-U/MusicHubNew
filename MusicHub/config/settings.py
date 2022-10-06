@@ -264,3 +264,6 @@ class Common(Configuration):
     SWAGGER_SETTINGS = {
         "DEFAULT_MODEL_RENDERING": "example",
     }
+
+    EMAIL_LINK_PATH = ""
+

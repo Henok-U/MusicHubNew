@@ -22,4 +22,5 @@ class Production(Common):
     AWS_S3_REGION_NAME = "eu-central-1"
     AWS_S3_VERIFY = True
     AWS_S3_FILE_OVERWRITE = False
+    EMAIL_LINK_PATH = "http://3.71.253.142"
     # MEDIA_URL = f"https://musichubstorage.s3.eu-central-1.amazonaws.com/"

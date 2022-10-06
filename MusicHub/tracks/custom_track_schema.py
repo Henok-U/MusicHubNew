@@ -1,12 +1,4 @@
 from drf_yasg import openapi
-from drf_yasg.inspectors import SwaggerAutoSchema
-
-
-class CustomAutoSchema(SwaggerAutoSchema):
-    def get_request_body_parameters(self, consumes):
-        result = super().get_request_body_parameters(consumes)
-        result.pop(0)
-        return result
 
 
 TOKEN_PARAMETER = openapi.Parameter(

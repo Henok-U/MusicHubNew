@@ -1,16 +1,18 @@
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import CreateAPIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-
-from MusicHub.tracks import custom_track_schema
-
-from ..antivirusProvider.service import AntivirusScan
+from django.utils.decorators import method_decorator
+from .custom_track_schema import TOKEN_PARAMETER
+from drf_yasg.utils import swagger_auto_schema
 from .serializers import CreateTrackSerializer
-from .track_service import get_filename_from_track
 
 
+@method_decorator(
+    name="post",
+    decorator=swagger_auto_schema(
+        manual_parameters=[TOKEN_PARAMETER],
+    ),
+)
 class UploadTrackView(CreateAPIView):
     """
     View for uploading new track by user
@@ -20,24 +22,7 @@ class UploadTrackView(CreateAPIView):
     serializer_class = CreateTrackSerializer
     parser_classes = [MultiPartParser]
 
-    @swagger_auto_schema(
-        auto_schema=custom_track_schema.CustomAutoSchema,
-        manual_parameters=[
-            custom_track_schema.TOKEN_PARAMETER,
-            custom_track_schema.public_body_parameter,
-        ],
-        responses=custom_track_schema.basic_response(
-            201, "Track uploaded successfully"
-        ),
-    )
-    def post(self, request, *args, **kwargs):
-        serializer = CreateTrackSerializer(
-            data=get_filename_from_track(request), context={"user": request.user}
-        )
-        serializer.is_valid(raise_exception=True)
-
-        scanner = AntivirusScan()
-        scanner.scan_file_for_malicious_content(request.data.get("track"))
-
-        serializer.save()
-        return Response(status=201, data=serializer.data)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["user"] = self.request.user
+        return context

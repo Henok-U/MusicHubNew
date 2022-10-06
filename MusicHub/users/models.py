@@ -111,3 +111,10 @@ class User(EmailAbstractUser):
 
     def __str__(self):
         return self.email
+
+    def get_email_short(self):
+        """
+        Get first part of email example:
+        for example@mail.com will return example
+        """
+        return self.email.split("@")[0]

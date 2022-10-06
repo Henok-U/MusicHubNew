@@ -2,9 +2,8 @@ import os
 from os.path import join
 from pathlib import Path
 
-
-from .base_test import AuthorizedApiTestCase
 from ..models import User
+from .base_test import AuthorizedApiTestCase
 
 
 class TestUserRegistrationAPIView(AuthorizedApiTestCase):

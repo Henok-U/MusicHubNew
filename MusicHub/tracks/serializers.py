@@ -1,30 +1,32 @@
-from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer, ValidationError
-from tinytag import TinyTag
+from rest_framework.serializers import ModelSerializer
+from django.utils.decorators import method_decorator
+from ..main.utils import exclude_fields_from_swagger_schema, format_sec_to_mins
+from .constants import FORMATED_DATE
+from .track_service import get_track_length, validate_track
+from .models import Track
 
-from MusicHub.main.utils import format_sec_to_mins
-from MusicHub.tracks.models import Track
-
-from .constants import FORMATED_DATE, MAX_FILE_SIZE
-
-
+@method_decorator(
+    name="get_fields", decorator=exclude_fields_from_swagger_schema(["filename"])
+)        
 class CreateTrackSerializer(ModelSerializer):
     class Meta:
         model = Track
-        fields = ["filename", "file", "is_public"]
+        fields = ["filename", "id", "track", "public"]
+        extra_kwargs = {"id": {"read_only": True}}
+
+    def to_internal_value(self, data):
+        data["filename"] = data.get("track").name
+        data["track_length"] = get_track_length(data.get("track"))
+        return super().to_internal_value(data)
 
     def validate_track(self, value):
-        if value.size > MAX_FILE_SIZE:
-            raise ValidationError("File cannot be bigger than 30 Mb")
+        validate_track(value)
         return value
 
     def create(self, validated_data):
-
         track = Track.objects.create(
             created_by=self.context.get("user"), **validated_data
         )
-        track.track_length = TinyTag.get(track.file.path).duration
-        track.save()
         return track
 
 

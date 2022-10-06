@@ -1,6 +1,9 @@
+
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
+from rest_framework.generics import CreateAPIView
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -12,22 +15,28 @@ from MusicHub.tracks.serializers import (
     ListTrackSerializer,
 )
 
+from .custom_track_schema import TOKEN_PARAMETER
 
-class UploadTrackView(generics.CreateAPIView):
+
+@method_decorator(
+    name="post",
+    decorator=swagger_auto_schema(
+        manual_parameters=[TOKEN_PARAMETER],
+    ),
+)
+class UploadTrackView(CreateAPIView):
     """
     View for uploading new track by user
     """
 
     permission_classes = [IsAuthenticated]
     serializer_class = CreateTrackSerializer
+    parser_classes = [MultiPartParser]
 
-    def post(self, request, *args, **kwargs):
-        serializer = CreateTrackSerializer(
-            data=request.data, context={"user": request.user}
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(status=201, data=serializer.data)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["user"] = self.request.user
+        return context
 
 
 @method_decorator(

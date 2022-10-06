@@ -1,11 +1,10 @@
 from django.urls import path
 
 from MusicHub.users.views.profile_view import (
+    AddUpdateProfilePicture,
     ChangePassword,
     ProfileView,
-    AddUpdateProfilePicture,
 )
-
 
 from .views.views import (
     RecoverPassword,

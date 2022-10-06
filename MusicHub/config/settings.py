@@ -56,6 +56,7 @@ class Common(Configuration):
         "MusicHub.users",
         "MusicHub.tracks",
         "MusicHub.main",
+        "MusicHub.antivirusProvider",
     ]
 
     MIDDLEWARE = [
@@ -193,13 +194,13 @@ class Common(Configuration):
             "verbose": {
                 "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
             },
-            "simple": {"format": "%(levelname)s %(message)s"},
+            "simple": {"format": "%(asctime)s %(levelname)s %(message)s"},
         },
-        # "filters": {
-        #     "require_debug_true": {
-        #         "()": "django.utils.log.RequireDebugTrue",
-        #     },
-        # },
+        "filters": {
+            "require_debug_true": {
+                "()": "django.utils.log.RequireDebugTrue",
+            },
+        },
         "handlers": {
             "django.server": {
                 "level": "INFO",
@@ -257,3 +258,12 @@ class Common(Configuration):
     )
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False
+
+    ANTIVIRUS_API_KEY = os.getenv("ANTIVIRUS_API_KEY")
+    ANTIVIRUS_BASE_URL = "https://api.metadefender.com/v4/file/"
+    SWAGGER_SETTINGS = {
+        "DEFAULT_MODEL_RENDERING": "example",
+    }
+
+    EMAIL_LINK_PATH = ""
+

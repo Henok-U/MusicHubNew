@@ -22,7 +22,7 @@ psycopg2==2.9.3
 
 #File managment
 pillow==9.2.0
-tinytag==1.8.1
+mutagen==1.45.1
 
 #production server
 django-storages==1.13.1

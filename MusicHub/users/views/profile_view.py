@@ -2,10 +2,11 @@ from django.core.exceptions import ValidationError
 from django.utils.datastructures import MultiValueDictKeyError
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import GenericAPIView
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import *
-from rest_framework.parsers import MultiPartParser
+
 from MusicHub.main.exception_handler import (
     CustomUserException,
     custom_exception_handler,
@@ -13,9 +14,9 @@ from MusicHub.main.exception_handler import (
 from MusicHub.users import custom_user_schema
 from MusicHub.users.models import User
 from MusicHub.users.serializers import (
+    AddChangePictureSerializer,
     ChangePasswordSerializer,
     ProfileSerializer,
-    AddChangePictureSerializer,
 )
 
 

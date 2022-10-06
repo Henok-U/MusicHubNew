@@ -16,7 +16,7 @@ def get_track_length(file):
 
 
 def validate_track(data):
-    scanner = AntivirusScan()
-    scanner.scan_file_for_malicious_content(data)
     if data.size >= MAX_FILE_SIZE_IN_MB:
         raise ValidationError("File cannot be bigger than 30 Mb")
+    scanner = AntivirusScan()
+    scanner.scan_file_for_malicious_content(data)

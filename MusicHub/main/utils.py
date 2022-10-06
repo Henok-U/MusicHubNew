@@ -125,8 +125,9 @@ def format_sec_to_mins(sec):
             return minutes + ":" + seconds
         except TypeError:
             return "Invalid track length"
-    elif sec == None:
+    elif not sec:
         return "0:00"
+
 
 def exclude_fields_from_swagger_schema(excluded_fields):
     def decorator(fn):
@@ -140,4 +141,3 @@ def exclude_fields_from_swagger_schema(excluded_fields):
         return wraper
 
     return decorator
-

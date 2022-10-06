@@ -118,15 +118,12 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 
 def format_sec_to_mins(sec):
-    if type(sec) == int:
-        try:
-            minutes = str(sec // 60)
-            seconds = str(sec % 60)
-            return minutes + ":" + seconds
-        except TypeError:
-            return "Invalid track length"
-    elif not sec:
-        return "0:00"
+    try:
+        minutes = str(sec // 60)
+        seconds = str(sec % 60)
+        return minutes + ":" + seconds
+    except TypeError:
+        return "unknown"
 
 
 def exclude_fields_from_swagger_schema(excluded_fields):

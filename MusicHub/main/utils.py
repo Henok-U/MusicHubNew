@@ -5,6 +5,7 @@ from typing import List
 from authemail.models import PasswordResetCode, SignupCode
 from django.core.mail import send_mail
 from django.utils import timezone
+from rest_framework.pagination import PageNumberPagination
 
 from MusicHub.config.settings import Common
 from MusicHub.users.models import User
@@ -103,6 +104,29 @@ def create_or_return_user(backend, response, *args, **kwargs):
 def get_random_string(length):
     letters = string.ascii_lowercase
     return "".join(random.choice(letters) for i in range(length))
+
+
+class LargeResultsSetPagination(PageNumberPagination):
+    """
+    Overrides default pagination class provided in settings.py,
+    inside REST_FRAMEWORK dictionary.
+    """
+
+    page_size = 40
+    page_size_query_parameter = "page_size"
+    max_page_size = 40
+
+
+def format_sec_to_mins(sec):
+    if type(sec) == int:
+        try:
+            minutes = str(sec // 60)
+            seconds = str(sec % 60)
+            return minutes + ":" + seconds
+        except TypeError:
+            return "Invalid track length"
+    elif not sec:
+        return "0:00"
 
 
 def exclude_fields_from_swagger_schema(excluded_fields):

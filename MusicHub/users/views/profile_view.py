@@ -26,7 +26,7 @@ class ProfileView(GenericAPIView):
     pagination_class = None
 
     @swagger_auto_schema(
-        manual_parameters=custom_user_schema.profile_parameters,
+        manual_parameters=custom_user_schema.authorization_token,
         responses=custom_user_schema.profile_get_response,
     )
     def get(self, request, *args, **kwargs):
@@ -37,7 +37,7 @@ class ProfileView(GenericAPIView):
         return Response(data=serializer.data)
 
     @swagger_auto_schema(
-        manual_parameters=custom_user_schema.profile_parameters,
+        manual_parameters=custom_user_schema.authorization_token,
         request_body=custom_user_schema.profile_update_request,
         responses=custom_user_schema.profile_update_responses,
     )
@@ -91,6 +91,9 @@ class AddUpdateProfilePicture(GenericAPIView):
     default relative path to picture is /media/users/avatar/example.jpg
 
     """
+
+    def get_serializer(self, *args, **kwargs):
+        pass
 
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser]

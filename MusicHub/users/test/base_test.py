@@ -17,20 +17,25 @@ class CustomApiTestCase(APITestCase):
         self.assertEqual(response.status_code, status_code)
         return response
 
-    def get_and_assert_equal_status_code(self, data, status_code):
-        response = self.client.patch(self.url, data=data)
+    def get_and_assert_equal_status_code(self, status_code):
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, status_code)
         return response
 
     def post_and_assert_equal_status_code(self, data, status_code):
-        response = self.client.patch(self.url, data=data)
+        response = self.client.post(self.url, data=data)
         self.assertEqual(response.status_code, status_code)
         return response
 
     def put_and_assert_equal_status_code(self, data, status_code):
-        response = self.client.patch(self.url, data=data)
+        response = self.client.put(self.url, data=data)
         self.assertEqual(response.status_code, status_code)
         return response
+
+    def delete_and_assert_equal_status_code(self, url_name, pk, status_code):
+        url = reverse(url_name, kwargs={"pk": pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status_code)
 
 
 class AuthorizedApiTestCase(CustomApiTestCase):

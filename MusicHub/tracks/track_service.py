@@ -6,17 +6,17 @@ from .constants import MAX_FILE_SIZE_IN_MB
 
 
 def get_track_length(file):
-    # TODO rafactor this
-    if file.name.split(".")[-1] == ".mp3":
+    filename = file.name.split(".")[-1]
+    if filename == ".mp3":
         return int(mp3.MP3(file).info.length)
-    if file.name.split(".")[-1] == ".wav":
+    if filename == ".wav":
         return int(wave.WAVE(file).info.length)
-    if file.name.split(".")[-1] == ".aac":
+    if filename == ".aac":
         return int(aac.AAC(file).info.length)
 
 
 def validate_track(data):
     if data.size >= MAX_FILE_SIZE_IN_MB:
         raise ValidationError("File cannot be bigger than 30 Mb")
-    scanner = AntivirusScan()
+    scanner = AntivirusScan(data.name)
     scanner.scan_file_for_malicious_content(data)

@@ -13,15 +13,16 @@ from .constants import (
 
 
 class AntivirusScan:
-    def __init__(self):
+    def __init__(self, filename):
         self.file_url = Common.ANTIVIRUS_BASE_URL
         self.post_headers = {
             "Content-Type": "application/octet-stream",
             "apikey": Common.ANTIVIRUS_API_KEY,
+            "filename": filename,
         }
         self.get_headers = {
             "apikey": Common.ANTIVIRUS_API_KEY,
-            "x-file-metadata": "1",
+            "x-file-metadata": "0",
         }
         self.bad_status = (
             AntivirusStatuses.INFECTED,

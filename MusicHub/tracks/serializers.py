@@ -1,12 +1,12 @@
 from rest_framework.serializers import ModelSerializer
 from django.utils.decorators import method_decorator
-from ..main.utils import remove_fields_from_serializer_to_schema
+from ..main.utils import exclude_fields_from_schema_generation
 from .track_service import get_track_length, validate_track
 from .models import Track
 
 
 @method_decorator(
-    name="get_fields", decorator=remove_fields_from_serializer_to_schema(["filename"])
+    name="get_fields", decorator=exclude_fields_from_schema_generation(["filename"])
 )
 class CreateTrackSerializer(ModelSerializer):
     class Meta:

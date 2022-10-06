@@ -105,7 +105,7 @@ def get_random_string(length):
     return "".join(random.choice(letters) for i in range(length))
 
 
-def remove_fields_from_serializer_to_schema(excluded_fields):
+def exclude_fields_from_schema_generation(excluded_fields):
     def decorator(fn):
         def wraper(*args, **kwargs):
             fields = fn(*args, **kwargs)

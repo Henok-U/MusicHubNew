@@ -1,4 +1,3 @@
-
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
@@ -16,12 +15,19 @@ from MusicHub.tracks.serializers import (
 )
 
 from .custom_track_schema import TOKEN_PARAMETER
+from drf_yasg.utils import no_body
 
 
 @method_decorator(
     name="post",
     decorator=swagger_auto_schema(
-        manual_parameters=[TOKEN_PARAMETER],
+        auto_schema=custom_track_schema.CustomSwaggerAutoSchema,
+        manual_parameters=[
+            TOKEN_PARAMETER,
+            custom_track_schema.track_file,
+            custom_track_schema.is_public,
+        ],
+        request_body=no_body,
     ),
 )
 class UploadTrackView(CreateAPIView):

@@ -124,17 +124,3 @@ def format_sec_to_mins(sec):
         return minutes + ":" + seconds
     except TypeError:
         return "unknown"
-
-
-def exclude_fields_from_swagger_schema(excluded_fields):
-    def decorator(fn):
-        def wraper(*args, **kwargs):
-            fields = fn(*args, **kwargs)
-            for item in excluded_fields:
-                if item in fields.keys():
-                    fields.pop(item)
-            return fields
-
-        return wraper
-
-    return decorator

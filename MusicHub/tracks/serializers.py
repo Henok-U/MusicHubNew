@@ -54,5 +54,5 @@ class ListTrackSerializer(ModelSerializer):
             "track_length": format_sec_to_mins(instance.track_length),
             "created_at": instance.created_at.strftime(FORMATED_DATE),
             "is_public": instance.is_public,
-            "playlist": None,
+            "playlist": instance.playlist,
         }

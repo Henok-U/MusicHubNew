@@ -52,9 +52,12 @@ class Common(Configuration):
         "django_filters",
         "drf_yasg",
         "social_django",
+        "django_extensions",
         # apps
         "MusicHub.users",
         "MusicHub.tracks",
+        "MusicHub.playlists",
+        # utility apps
         "MusicHub.main",
         "MusicHub.antivirusProvider",
     ]

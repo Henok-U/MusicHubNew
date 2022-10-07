@@ -7,7 +7,7 @@ class TrackAdmin(admin.ModelAdmin):
     def regroup_by(self):
         return "category"
 
-    list_display = ("filename", "created_by", "track_length", "is_public")
+    list_display = ("filename", "created_by", "track_length", "is_public", "playlist")
     list_filter = ("created_by", "is_public")
     readonly_fields = ("id", "created_at", "created_by", "track_length")
     ordering = ("created_by",)
@@ -20,6 +20,7 @@ class TrackAdmin(admin.ModelAdmin):
         "is_public",
         "created_at",
         "created_by",
+        "playlist",
     )
 
 

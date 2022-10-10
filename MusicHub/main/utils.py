@@ -2,6 +2,7 @@ import random
 import string
 import os
 from typing import List
+from uuid import uuid4
 
 from authemail.models import PasswordResetCode, SignupCode
 from django.contrib.auth import get_user_model
@@ -139,3 +140,9 @@ def get_upload_path(instance, filename):
 def get_sentinal_user():
     deleted_user = get_user_model().objects.get_or_create(email="deleted_user")
     return deleted_user[0]  # id is on index 0 by default
+
+
+def rename_image_to_random(image_name):
+    random_name = uuid4().hex
+
+    return f"{random_name}.{image_name.split('.')[-1]}"

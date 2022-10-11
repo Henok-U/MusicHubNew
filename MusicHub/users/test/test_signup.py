@@ -25,11 +25,7 @@ class TestUserRegistrationAPIView(APITestCase):
 
         response = self.client.post(self.url, data)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, "id")
-        self.assertContains(response, "email")
-        self.assertContains(response, "first_name")
-        self.assertContains(response, "last_name")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_invalid_user_registration(self):
         """
@@ -62,8 +58,7 @@ class TestUserRegistrationAPIView(APITestCase):
         }
         response = self.client.post(self.url, data_one)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, "email")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # user two ---------------------------------------------------
         data_two = {
@@ -87,7 +82,7 @@ class TestUserRegistrationAPIView(APITestCase):
             "last_name": "Diesel",
         }
         response = self.client.post(self.url, data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, False)
         verify_token = SignupCode.objects.get(user=user)
@@ -106,7 +101,7 @@ class TestUserRegistrationAPIView(APITestCase):
             "last_name": "Diesel",
         }
         response = self.client.post(self.url, data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, False)
         verify_token = SignupCode.objects.get(user=user)
@@ -159,7 +154,7 @@ class TestUserRegistrationAPIView(APITestCase):
             "last_name": "Diesel",
         }
         response = self.client.post(self.url, data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user = User.objects.get(email="testuser2@email.com")
         self.assertEqual(user.is_verified, False)
 
@@ -207,7 +202,7 @@ class TestUserRegistrationAPIView(APITestCase):
             "last_name": "Diesel",
         }
         response = self.client.post(self.url, data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user = User.objects.get(email="damian@email.com")
         verify_token = SignupCode.objects.get(user=user)
         response = self.client.get(f"/api/user/signup/verify/?code={verify_token}")
@@ -223,7 +218,7 @@ class TestUserRegistrationAPIView(APITestCase):
             "last_name": "Diesel",
         }
         response = self.client.post(self.url, data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user = User.objects.get(email="damian2@email.com")
         verify_token = SignupCode.objects.get(user=user)
         verify_token.created_at = timezone.now() - timezone.timedelta(days=2)

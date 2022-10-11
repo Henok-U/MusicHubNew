@@ -1,24 +1,5 @@
 from drf_yasg import openapi
-from drf_yasg.inspectors import SwaggerAutoSchema
 
-
-class CustomSwaggerAutoSchema(SwaggerAutoSchema):
-    def get_query_parameters(self):
-        test = super().get_query_parameters()
-        return test
-
-    def get_query_serializer(self):
-        test = super().get_query_serializer()
-        return test
-
-
-TOKEN_PARAMETER = openapi.Parameter(
-    name="Authorization",
-    in_=openapi.IN_HEADER,
-    type=openapi.TYPE_STRING,
-    description="Authorization: token value",
-    required=True,
-)
 # upload track
 track_file = openapi.Parameter(
     name="file", in_=openapi.IN_FORM, type=openapi.TYPE_FILE, required=True
@@ -26,21 +7,6 @@ track_file = openapi.Parameter(
 is_public = openapi.Parameter(
     name="is_public", in_=openapi.IN_FORM, type=openapi.TYPE_BOOLEAN, required=True
 )
-
-
-def basic_response(success_status_code, success_message):
-    return {
-        success_status_code: openapi.Response(
-            description="Successful action",
-            examples={"application/json": {"message": success_message}},
-        ),
-        "400": openapi.Response(
-            description="custom Error message",
-            examples={
-                "application/json": {"message": "error message", "status_code": "400"}
-            },
-        ),
-    }
 
 
 list_example = {
@@ -58,11 +24,3 @@ list_example = {
         }
     ],
 }
-
-public_body_parameter = openapi.Parameter(
-    name="public",
-    in_=openapi.IN_FORM,
-    type=openapi.TYPE_BOOLEAN,
-    description="make track private or public",
-    required=True,
-)

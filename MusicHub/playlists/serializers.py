@@ -1,6 +1,8 @@
 from uuid import uuid4
 from rest_framework import serializers
 
+from MusicHub.tracks.constants import FORMATED_DATE
+
 from .models import Playlist
 from .services import validate_picture
 from ..main.utils import rename_image_to_random
@@ -33,3 +35,13 @@ class PlaylistSerializer(serializers.ModelSerializer):
         self.initial_data["playlist_image"].name = rename_image_to_random(image_name)
 
         return super().save(**kwargs)
+
+
+class ListPlaylistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Playlist
+        fields = ["name", "likes", "is_public", "created_at", "playlist_image"]
+
+    def to_representation(self, instance):
+        instance.created_at = instance.created_at.strftime(FORMATED_DATE)
+        return super().to_representation(instance)

@@ -3,6 +3,7 @@ from rest_framework.authtoken.models import Token as SigninToken
 from rest_framework.test import APITestCase
 
 from MusicHub.users.models import User
+from .base_test import CustomApiTestCase
 
 
 class TestUserSignInGoogleAPIView(APITestCase):
@@ -12,37 +13,35 @@ class TestUserSignInGoogleAPIView(APITestCase):
     ! https://developers.google.com/oauthplayground/#step1&apisSelect=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%2Chttps%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&url=https%3A%2F%2F&content_type=application%2Fjson&http_method=GET&useDefaultOauthCred=unchecked&oauthEndpointSelect=Google&oauthAuthEndpointValue=https%3A%2F%2Faccounts.google.com%2Fo%2Foauth2%2Fv2%2Fauth&oauthTokenEndpointValue=https%3A%2F%2Foauth2.googleapis.com%2Ftoken&includeCredentials=unchecked&accessTokenType=bearer&autoRefreshToken=unchecked&accessType=offline&prompt=consent&response_type=code&wrapLines=on
     """
 
-    access_token = ""
+    data = {"access_token": ""}
+
+    def sent_request_and_assert_equal(self, data, status_code):
+        response = self.client.post("/api/user/signin-social/google-oauth2/", data)
+        self.assertEqual(response.status_code, status_code)
+        return response
 
     def test_create_user_pass(self):
-        data = {"access_token": self.access_token}
-        response = self.client.post("/api/user/signin-social/google-oauth2/", data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.sent_request_and_assert_equal(self.data, 200)
         user = User.objects.all()
         self.assertEqual(len(user), 1)
 
     def test_login_user_pass(self):
-        data = {"access_token": self.access_token}
-        self.client.post("/api/user/signin-social/google-oauth2/", data)
+        self.sent_request_and_assert_equal(self.data, 200)
         token = SigninToken.objects.all()
         token.delete()
-        response = self.client.post("/api/user/signin-social/google-oauth2/", data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.sent_request_and_assert_equal(self.data, 200)
         self.assertContains(response, "token")
 
     def test_create_user_fail(self):
         data = {"access_token": "test"}
-        response = self.client.post("/api/user/signin-social/google-oauth2/", data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.sent_request_and_assert_equal(data, 400)
 
-        data2 = {}
-        response = self.client.post("/api/user/signin-social/google-oauth2/", data2)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.sent_request_and_assert_equal({}, 400)
 
-        data = {"access_token": self.access_token}
-        self.client.post("/api/user/signin-social/facebook-oauth/", data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.post(
+            "/api/user/signin-social/facebook-oauth/", self.data
+        )
+        self.assertEqual(response.status_code, 404)
 
         data = {"access_token": ""}
-        response = self.client.post("/api/user/signin-social/google-oauth2/", data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.sent_request_and_assert_equal(data, 400)

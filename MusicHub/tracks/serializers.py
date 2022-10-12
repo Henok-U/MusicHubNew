@@ -20,7 +20,7 @@ class CreateTrackSerializer(ModelSerializer):
         data["track_length"] = get_track_length(data.get("file"))
         return super().to_internal_value(data)
 
-    def validate_track(self, value):
+    def validate_file(self, value):
         validate_track(value)
         return value
 

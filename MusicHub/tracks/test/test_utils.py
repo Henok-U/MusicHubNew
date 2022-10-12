@@ -9,7 +9,7 @@ def delete_generated_files_testing_tracks(email):
     tracks_path = os.path.join(
         os.path.dirname(BASE_DIR),
         "media",
-        "tracks",
+        "Track",
         user_track_folder_name,
     )
     shutil.rmtree(tracks_path)

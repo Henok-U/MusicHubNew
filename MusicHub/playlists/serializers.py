@@ -29,7 +29,10 @@ class PlaylistSerializer(serializers.ModelSerializer):
         override save() method to rename cover image of playlist
         to a randomly generated name
         """
-        image_name = self.initial_data["playlist_image"].name
-        self.initial_data["playlist_image"].name = rename_image_to_random(image_name)
+        if self.initial_data.get("playlist_image"):
+            image_name = self.initial_data["playlist_image"].name
+            self.initial_data["playlist_image"].name = rename_image_to_random(
+                image_name
+            )
 
         return super().save(**kwargs)

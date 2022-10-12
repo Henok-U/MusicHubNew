@@ -9,7 +9,7 @@ class TrackAdmin(admin.ModelAdmin):
 
     list_display = ("filename", "created_by", "track_length", "is_public", "playlist")
     list_filter = ("created_by", "is_public")
-    readonly_fields = ("id", "created_at", "created_by", "track_length")
+    readonly_fields = ("id", "created_at")
     ordering = ("created_by",)
     search_fields = ["filename", "created_by"]
     fields = (

@@ -3,6 +3,8 @@ from uuid import uuid4
 from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
 
+from MusicHub.main.managers import AggregationManager
+
 from ..config.settings import Common
 from ..main.utils import get_upload_path, get_sentinal_user
 
@@ -28,7 +30,11 @@ class Playlist(models.Model):
         Common.AUTH_USER_MODEL, on_delete=models.SET(get_sentinal_user)
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    likes = models.PositiveIntegerField(default=0)
+    likes = models.ManyToManyField(
+        Common.AUTH_USER_MODEL, related_name="playlist_likes"
+    )
+
+    objects = AggregationManager()
 
     def __str__(self) -> str:
         return self.name

@@ -5,6 +5,7 @@ from django.db import models
 
 from ..main.utils import get_upload_path, get_sentinal_user
 from ..config.settings import Common
+from MusicHub.main.managers import AggregationManager
 
 
 class Track(models.Model):
@@ -37,6 +38,9 @@ class Track(models.Model):
         null=True,
         blank=True,
     )
+    likes = models.ManyToManyField(Common.AUTH_USER_MODEL, related_name="track_likes")
+
+    objects = AggregationManager()
 
     def __str__(self):
         return self.filename

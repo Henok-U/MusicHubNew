@@ -20,3 +20,8 @@ def validate_track(data):
         raise ValidationError("File cannot be bigger than 30 Mb")
     scanner = AntivirusScan(data.name)
     scanner.scan_file_for_malicious_content(data)
+
+
+def remove_from_liked_when_set_to_private(instance, validated_data):
+    if not validated_data["playlist"].is_public:
+        instance.likes.clear()

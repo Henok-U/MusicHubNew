@@ -21,6 +21,7 @@ class TrackAdmin(admin.ModelAdmin):
         "created_at",
         "created_by",
         "playlist",
+        "likes",
     )
 
 

@@ -1,8 +1,7 @@
-from uuid import uuid4
 from rest_framework import serializers
 
 from MusicHub.tracks.constants import FORMATED_DATE
-
+from MusicHub.tracks.models import Track
 from .models import Playlist
 from .services import validate_picture
 from ..main.utils import rename_image_to_random
@@ -44,4 +43,7 @@ class ListPlaylistSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         instance.created_at = instance.created_at.strftime(FORMATED_DATE)
-        return super().to_representation(instance)
+        rep = super().to_representation(instance)
+        rep["number_of_tracks"] = Playlist.objects.aggregate_number_of_tracks(instance)
+        rep["likes"] = Playlist.objects.aggregate_likes(playlist_likes=instance)
+        return rep

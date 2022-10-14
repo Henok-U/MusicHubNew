@@ -54,3 +54,16 @@ class ListOwnPlaylistView(ListAPIView):
         return Playlist.objects.filter(created_by=self.request.user).order_by(
             "-created_at"
         )
+
+
+class ListOwnPlaylistWithoutTrackPlaylist(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ListPlaylistSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def get_queryset(self):
+        return (
+            Playlist.objects.filter(created_by=self.request.user)
+            .exclude(track=self.request.query_params.get("track"))
+            .order_by("-created_at")
+        )

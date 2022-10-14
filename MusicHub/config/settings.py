@@ -168,7 +168,7 @@ class Common(Configuration):
     SOCIAL_AUTH_PIPELINE = (
         "social_core.pipeline.social_auth.social_details",
         "social_core.pipeline.social_auth.social_uid",
-        "MusicHub.main.utils.create_or_return_user",
+        "MusicHub.users.user_service.create_or_return_user",
     )
 
     LOGGING = {

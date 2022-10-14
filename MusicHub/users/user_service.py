@@ -80,24 +80,18 @@ def create_or_return_user(backend, response, *args, **kwargs):
     Returns:
         User: created or pulled from database user
     """
-
-    users = User.objects.filter(email=response["sub"])
-    if users.exists():
-        return users.get()
-    else:
-        user = User.objects.create_user(
-            email=response["sub"],
-            first_name=response["given_name"],
-            last_name=response["family_name"],
-            password="",
-            is_verified=True,
-        )
-        return user
+    user, created = User.objects.get_or_create(
+        email=response["sub"],
+        first_name=response["given_name"],
+        last_name=response["family_name"],
+        password="",
+        is_verified=True,
+    )
+    return user
 
 
 def check_user_sign_up(func):
-    def decorator(*args, **kwargs):
-        request = args[0]
+    def decorator(request, *args, **kwargs):
         user_query = User.objects.filter(email=request.data.get("email"))
         if user_query.exists():
             if user_query.get().is_verified:

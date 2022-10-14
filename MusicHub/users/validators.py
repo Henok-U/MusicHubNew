@@ -1,6 +1,7 @@
 from rest_framework.serializers import ValidationError
 
 from ..main.constants import MAX_PICTURE_SIZE_IN_MB
+from ..main.validators import validate_files
 
 
 def validate_passwords_match(data):
@@ -25,7 +26,6 @@ def validate_old_password(data, user):
 
 
 def validate_picture(picture):
-    if not picture:
-        raise ValidationError("Please provide a picture")
-    if picture.size > MAX_PICTURE_SIZE_IN_MB:
-        raise ValidationError("Picture size can not be greater than 3Mb")
+    if picture:
+        validate_files(picture, MAX_PICTURE_SIZE_IN_MB)
+    raise ValidationError("Please provide a picture")

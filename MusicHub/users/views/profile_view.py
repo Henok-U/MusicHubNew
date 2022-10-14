@@ -33,7 +33,7 @@ class ProfileView(RetrieveUpdateAPIView):
     http_method_names = ["get", "patch"]
 
     def get_queryset(self):
-        return User.objects.get(email=self.request.user.email)
+        return self.request.user
 
     def get_object(self):
         return self.get_queryset()
@@ -58,7 +58,7 @@ class ChangePassword(UpdateAPIView):
     http_method_names = ["patch"]
 
     def get_queryset(self):
-        return User.objects.get(email=self.request.user.email)
+        return self.request.user
 
     def get_object(self):
         return self.get_queryset()
@@ -87,7 +87,7 @@ class AddUpdateProfilePicture(UpdateAPIView):
     http_method_names = ["patch"]
 
     def get_queryset(self):
-        return User.objects.get(email=self.request.user.email)
+        return self.request.user
 
     def get_object(self):
         return self.get_queryset()

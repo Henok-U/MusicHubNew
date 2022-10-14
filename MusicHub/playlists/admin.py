@@ -4,7 +4,7 @@ from MusicHub.playlists.models import Playlist
 
 
 class PlaylistAdmin(admin.ModelAdmin):
-    list_display = ("name", "is_public", "created_by", "likes")
+    list_display = ("name", "is_public", "created_by")
     fields = ("name", "is_public", "playlist_image", "created_by", "likes")
 
 

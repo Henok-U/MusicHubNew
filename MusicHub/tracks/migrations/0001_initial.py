@@ -10,8 +10,6 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    replaces = [("tracks", "0001_initial"), ("tracks", "0002_alter_track_playlist")]
-
     initial = True
 
     dependencies = [

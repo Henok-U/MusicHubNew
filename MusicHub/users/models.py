@@ -79,7 +79,7 @@ class User(EmailAbstractUser):
                 code="Invalid email", message="Please provide valid email address"
             )
         ],
-    )  # required
+    )
     password = models.CharField(
         max_length=100,  # this is for hash stored in database
         validators=[
@@ -103,7 +103,6 @@ class User(EmailAbstractUser):
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
-    # required
     objects = CustomManager()
 
     USERNAME_FIELD = "email"

@@ -8,13 +8,20 @@ class TrackFactory(factory.django.DjangoModelFactory):
         model = "tracks.Track"
 
     id = factory.Faker("uuid4")
-    filename = "Track 01 - track"
+    filename = factory.Faker("text", max_nb_chars=20)
     created_by = factory.SubFactory(UserFactory)
+    is_public = factory.Faker("boolean")
+    created_at = factory.Faker("date_time")
     file = factory.django.FileField(filename="test.mp3")
-    track_length = 145
+    track_length = factory.Faker("random_int")
 
-    @classmethod
-    def _create(cls, model_class, *args, **kwargs):
-        instance = cls.build(*args, **kwargs)
-        instance.save()
-        return instance
+    @factory.post_generation
+    def likes(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of groups were passed in, use them
+            for like in extracted:
+                self.likes.add(like)

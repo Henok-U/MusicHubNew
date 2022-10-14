@@ -27,6 +27,8 @@ class Playlist(models.Model):
     created_by = models.ForeignKey(
         Common.AUTH_USER_MODEL, on_delete=models.SET(get_sentinal_user)
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.PositiveIntegerField(default=0)
 
     def __str__(self) -> str:
         return self.name

@@ -4,6 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 
+from MusicHub.main.exception_handler import CustomException
+
 from .models import Playlist
 from .serializers import PlaylistSerializer, ListPlaylistSerializer
 from ..main.utils import LargeResultsSetPagination
@@ -59,6 +61,9 @@ class ListOwnPlaylistView(ListAPIView):
             "-created_at"
         )
         if track_id:
-            return query.exclude(track=track_id)
+            try:
+                return query.exclude(track=track_id)
+            except Exception as e:
+                raise CustomException(str(e))
         else:
             return query

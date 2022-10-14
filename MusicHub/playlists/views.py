@@ -7,7 +7,7 @@ from drf_yasg.utils import swagger_auto_schema
 from .models import Playlist
 from .serializers import PlaylistSerializer, ListPlaylistSerializer
 from ..main.utils import LargeResultsSetPagination
-from .custom_playlist_schema import TOKEN_PARAMETER
+from .custom_playlist_schema import TOKEN_PARAMETER, optional_track_id
 
 
 class CreatePlaylistView(CreateAPIView):
@@ -38,7 +38,10 @@ class UpdatePlaylistView(UpdateAPIView):
 
 
 @method_decorator(
-    name="get", decorator=swagger_auto_schema(manual_parameters=[TOKEN_PARAMETER])
+    name="get",
+    decorator=swagger_auto_schema(
+        manual_parameters=[TOKEN_PARAMETER, optional_track_id]
+    ),
 )
 class ListOwnPlaylistView(ListAPIView):
     """
@@ -51,19 +54,11 @@ class ListOwnPlaylistView(ListAPIView):
     pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
-        return Playlist.objects.filter(created_by=self.request.user).order_by(
+        track_id = self.request.query_params.get("track")
+        query = Playlist.objects.filter(created_by=self.request.user).order_by(
             "-created_at"
         )
-
-
-class ListOwnPlaylistWithoutTrackPlaylist(ListAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ListPlaylistSerializer
-    pagination_class = LargeResultsSetPagination
-
-    def get_queryset(self):
-        return (
-            Playlist.objects.filter(created_by=self.request.user)
-            .exclude(track=self.request.query_params.get("track"))
-            .order_by("-created_at")
-        )
+        if track_id:
+            return query.exclude(track=track_id)
+        else:
+            return query

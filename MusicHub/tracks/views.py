@@ -101,6 +101,12 @@ class DeleteOneTrackView(generics.DestroyAPIView):
         )
 
 
+@method_decorator(
+    name="patch",
+    decorator=swagger_auto_schema(
+        manual_parameters=[custom_track_schema.TOKEN_PARAMETER],
+    ),
+)
 class AddTrackToPlaylist(UpdateAPIView):
     """View for adding user track to his playlist"""
 

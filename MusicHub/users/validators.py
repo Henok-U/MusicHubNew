@@ -28,4 +28,5 @@ def validate_old_password(data, user):
 def validate_picture(picture):
     if picture:
         validate_files(picture, MAX_PICTURE_SIZE_IN_MB)
-    raise ValidationError("Please provide a picture")
+    else:
+        raise ValidationError("please provide picture")

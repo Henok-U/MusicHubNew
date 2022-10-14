@@ -40,7 +40,3 @@ class TestUserRegistrationAPIView(AuthorizedApiTestCase):
 
         response = self.client.patch(path=self.url, data={"profile_avatar": ""})
         self.assertEqual(response.status_code, 400)
-
-        self.load_upload_and_get_picture("testtt.jpg", 400)
-        response = self.client.patch(path=self.url)
-        self.assertEqual(response.status_code, 400)

@@ -111,7 +111,7 @@ class AddChangePictureSerializer(serializers.ModelSerializer):
         return attrs
 
     def save(self, **kwargs):
-        name = self.initial_data["profile_avatar"].name
+        name = self.initial_data.get("profile_avatar").name
         random = get_random_string(10)
         self.initial_data["profile_avatar"].name = f"{random}.{name.split('.')[-1]}"
         return super().save(**kwargs)

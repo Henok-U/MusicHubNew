@@ -102,7 +102,7 @@ def check_user_sign_up(func):
                 signup_code.delete()
                 verification_email(user_query.get(), request)
             raise CustomUserException("Please verify Your email address")
-        response = func(*args, **kwargs)
+        response = func(request, *args, **kwargs)
         verification_email(user_query.get(), request)
         return response
 

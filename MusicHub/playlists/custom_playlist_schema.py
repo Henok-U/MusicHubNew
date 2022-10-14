@@ -8,3 +8,11 @@ TOKEN_PARAMETER = openapi.Parameter(
     description="Authorization: token value",
     required=True,
 )
+
+optional_track_id = openapi.Parameter(
+    name="track",
+    in_=openapi.IN_QUERY,
+    type=openapi.TYPE_STRING,
+    description="Track id to exclude playlist associated with this track",
+    required=False,
+)

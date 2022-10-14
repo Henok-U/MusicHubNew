@@ -2,7 +2,11 @@ from django.urls import path
 
 from MusicHub.users.views.profile_view import AddUpdateProfilePicture
 
-from .views import CreatePlaylistView, UpdatePlaylistView, ListOwnPlaylistView
+from .views import (
+    CreatePlaylistView,
+    UpdatePlaylistView,
+    ListOwnPlaylistView,
+)
 
 urlpatterns = [
     path("create/", CreatePlaylistView.as_view(), name="create-playlist"),

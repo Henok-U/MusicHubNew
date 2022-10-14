@@ -23,3 +23,8 @@ def custom_exception_handler(exc, context):
 class CustomUserException(APIException):
     status_code = 400
     default_detail = "Invalid data"
+
+
+class CustomException(APIException):
+    status_code = 400
+    default_detail = "Invalid data"

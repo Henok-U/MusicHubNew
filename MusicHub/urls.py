@@ -37,6 +37,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/user/", include("MusicHub.users.urls")),
     path("api/track/", include("MusicHub.tracks.urls")),
+    path("api/playlist/", include("MusicHub.playlists.urls")),
     # swagger api doc paths
     path(
         "doc/swagger",

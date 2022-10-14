@@ -20,7 +20,7 @@ class CreateTrackSerializer(ModelSerializer):
         data["track_length"] = get_track_length(data.get("file"))
         return super().to_internal_value(data)
 
-    def validate_track(self, value):
+    def validate_file(self, value):
         validate_track(value)
         return value
 
@@ -54,5 +54,5 @@ class ListTrackSerializer(ModelSerializer):
             "track_length": format_sec_to_mins(instance.track_length),
             "created_at": instance.created_at.strftime(FORMATED_DATE),
             "is_public": instance.is_public,
-            "playlist": None,
+            "playlist": instance.playlist,
         }

@@ -11,10 +11,14 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import environ
 from os.path import join
 from pathlib import Path
 
 from configurations import Configuration
+
+env = environ.Env()
+environ.Env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,9 +56,12 @@ class Common(Configuration):
         "django_filters",
         "drf_yasg",
         "social_django",
+        "django_extensions",
         # apps
         "MusicHub.users",
         "MusicHub.tracks",
+        "MusicHub.playlists",
+        # utility apps
         "MusicHub.main",
         "MusicHub.antivirusProvider",
     ]
@@ -259,9 +266,8 @@ class Common(Configuration):
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False
 
-    ANTIVIRUS_API_KEY = os.getenv("ANTIVIRUS_API_KEY") or os.environ.get(
-        "ANTIVIRUS_API_KEY"
-    )
+    ANTIVIRUS_API_KEY = os.getenv("ANTIVIRUS_API_KEY") or env("ANTIVIRUS_API_KEY")
+
     ANTIVIRUS_BASE_URL = "https://api.metadefender.com/v4/file/"
     SWAGGER_SETTINGS = {
         "DEFAULT_MODEL_RENDERING": "example",

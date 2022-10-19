@@ -1,5 +1,5 @@
 #Django 
-Django==4.1
+Django==4.1.2
 django-configurations==2.4
 
 #Django Rest Framework

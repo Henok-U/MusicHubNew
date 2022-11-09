@@ -1,5 +1,6 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
+
 from ...users.test.user_factory import UserFactory
 
 

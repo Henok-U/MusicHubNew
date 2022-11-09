@@ -14,3 +14,4 @@ class AntivirusStatuses(Enum):
 
 CHECK_PROGRESS_DELAY_SECONDS = 1
 PROGRES_PERCENTAGE = 100
+ANTIVIRUS_BASE_URL = "https://api.metadefender.com/v4/file/"

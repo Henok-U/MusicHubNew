@@ -1,20 +1,22 @@
-from time import sleep
 import json
+from time import sleep
+
 import requests
 
 from MusicHub.antivirusProvider.custom_exception import CustomAntiVirusException
 
 from ..config.settings import Common
 from .constants import (
-    AntivirusStatuses,
+    ANTIVIRUS_BASE_URL,
     CHECK_PROGRESS_DELAY_SECONDS,
     PROGRES_PERCENTAGE,
+    AntivirusStatuses,
 )
 
 
 class AntivirusScan:
     def __init__(self, filename):
-        self.file_url = Common.ANTIVIRUS_BASE_URL
+        self.file_url = ANTIVIRUS_BASE_URL
         self.post_headers = {
             "Content-Type": "application/octet-stream",
             "apikey": Common.ANTIVIRUS_API_KEY,

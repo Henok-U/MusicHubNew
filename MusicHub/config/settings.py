@@ -20,22 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class Common(Configuration):
-    # Build paths inside the project like this: BASE_DIR / 'subdir'.
-    # Quick-start development settings - unsuitable for production
-    # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-    # SECURITY WARNING: keep the secret key used in production secret!
-
-    # SECURITY WARNING: don't run with debug turned on in production!
-    # Set DEBUG to False as a default for safety
-    # https://docs.djangoproject.com/en/dev/ref/settings/#debug
     DEBUG = False
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
-
     ALLOWED_HOSTS = ["*"]
-
-    # Email
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
     # Application definition
     INSTALLED_APPS = [
@@ -57,7 +44,13 @@ class Common(Configuration):
         "MusicHub.tracks",
         "MusicHub.main",
         "MusicHub.antivirusProvider",
+        "MusicHub.emailProvider",
     ]
+
+    ROOT_URLCONF = "MusicHub.urls"
+
+    # Custom user app
+    AUTH_USER_MODEL = "users.User"
 
     MIDDLEWARE = [
         "django.middleware.security.SecurityMiddleware",
@@ -68,8 +61,6 @@ class Common(Configuration):
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
-
-    ROOT_URLCONF = "MusicHub.urls"
 
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -117,9 +108,6 @@ class Common(Configuration):
             "PORT": "5432",
         }
     }
-
-    # Custom user app
-    AUTH_USER_MODEL = "users.User"
 
     # Password validation
     # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -180,7 +168,7 @@ class Common(Configuration):
     SOCIAL_AUTH_PIPELINE = (
         "social_core.pipeline.social_auth.social_details",
         "social_core.pipeline.social_auth.social_uid",
-        "MusicHub.main.utils.create_or_return_user",
+        "MusicHub.users.user_service.create_or_return_user",
     )
 
     LOGGING = {
@@ -245,26 +233,26 @@ class Common(Configuration):
     # Email settings
     # https://docs.djangoproject.com/en/3.1/topics/email/
     # https://docs.djangoproject.com/en/3.1/ref/settings/#email-host
-
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_FROM = (
         os.environ.get("AUTHEMAIL_DEFAULT_EMAIL_FROM") or "musichub.itechart@gmail.com"
     )
-    EMAIL_BCC = "<YOUR DEFAULT_EMAIL_BCC HERE>"
-    EMAIL_HOST = "smtp.sendgrid.net" or "smtp.gmail.com"
-    EMAIL_PORT = "587" or 587
-    EMAIL_HOST_USER = "apikey" or os.environ.get("AUTHEMAIL_EMAIL_HOST_USER")
+    EMAIL_HOST = "smtp.sendgrid.net"
+    EMAIL_PORT = "587"
+    EMAIL_HOST_USER = "apikey"
     EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_KEY") or os.getenv(
         "AUTHEMAIL_EMAIL_HOST_PASSWORD"
     )
+
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False
+    EMAIL_LINK_PATH = ""
 
+    # Antivirus provider
     ANTIVIRUS_API_KEY = os.getenv("ANTIVIRUS_API_KEY") or os.environ.get(
         "ANTIVIRUS_API_KEY"
     )
-    ANTIVIRUS_BASE_URL = "https://api.metadefender.com/v4/file/"
+    # Swagger Documentation
     SWAGGER_SETTINGS = {
         "DEFAULT_MODEL_RENDERING": "example",
     }
-
-    EMAIL_LINK_PATH = ""

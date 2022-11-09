@@ -10,71 +10,77 @@ from .user_factory import UserFactory
 
 fake = Faker()
 
+from rest_framework import status
 
-class TestUserRegistrationAPIView(APITestCase):
+from .base_test import CustomApiTestCase
+
+
+class TestUserRegistrationAPIView(CustomApiTestCase):
     def setUp(self):
-        # Every test needs access to the request factory.
-        self.url = reverse("reset-password")
-        self.user_data = UserFactory()
+        self.set_up("reset-password")
+
+    def reset_password_and_get_user(self, token, data, status_code):
+        response = self.client.patch(f"{self.url}?code={token}", data=data)
+        self.assertEqual(response.status_code, status_code)
+        return User.objects.get(email=self.user_data.email)
+
+    def modify_reset_code_date(self, days):
+        reset_code = PasswordResetCode.objects.get(user=self.user_data)
+        reset_code.created_at = timezone.now() - timezone.timedelta(days=days)
+        reset_code.save()
+        return reset_code
 
     def test_reset_password_success(self):
-        response = self.client.post(self.url, {"email": self.user_data})
-        self.assertEqual(response.status_code, 200)
+        self.post_and_assert_equal_status_code({"email": self.user_data}, 200)
+
         reset_code = PasswordResetCode.objects.get(user=self.user_data)
         data = {"password": "newpassword123", "confirm_password": "newpassword123"}
-        response = self.client.put(f"{self.url}?code={reset_code}", data=data)
-        self.assertEqual(response.status_code, 200)
-        user = User.objects.get(email=self.user_data.email)
+
+        user = self.reset_password_and_get_user(reset_code, data, 200)
+
         self.assertTrue(user.check_password("newpassword123"))
 
     def test_reset_password_code_email_not_found_or_not_valid_email(self):
-        response = self.client.post(self.url, {"test": "test"})
-        self.assertEqual(response.status_code, 400)
-        response = self.client.post(self.url, {"email": "notavalidemail"})
-        self.assertEqual(response.status_code, 400)
-        response = self.client.post(self.url, {"email": "notavalidemail@gmail.com"})
-        self.assertEqual(response.status_code, 400)
+
+        self.post_and_assert_equal_status_code({"test": "test"}, 400)
+
+        self.post_and_assert_equal_status_code({"email": "notavalidemail"}, 400)
+
+        self.post_and_assert_equal_status_code(
+            {"email": "notavalidemail@gmail.com"}, 400
+        )
 
     def test_reset_password_code_expired(self):
-        response = self.client.post(self.url, {"email": self.user_data})
-        self.assertEqual(response.status_code, 200)
-        reset_code = PasswordResetCode.objects.get(user=self.user_data)
-        reset_code.created_at = timezone.now() - timezone.timedelta(days=2)
-        reset_code.save()
+        self.post_and_assert_equal_status_code({"email": self.user_data}, 200)
+
         data = {"password": "newpassword123", "confirm_password": "newpassword123"}
-        response = self.client.put(f"{self.url}?code={reset_code}", data=data)
-        self.assertEqual(response.status_code, 400)
+        reset_code = self.modify_reset_code_date(2)
+
+        user = self.reset_password_and_get_user(reset_code, data, 400)
+        self.assertFalse(user.check_password("newpassword123"))
 
     def test_reset_password_passwords_validation_fails(self):
-        response = self.client.post(self.url, {"email": self.user_data})
-        self.assertEqual(response.status_code, 200)
+        self.post_and_assert_equal_status_code({"email": self.user_data}, 200)
         reset_code = PasswordResetCode.objects.get(user=self.user_data)
 
         data = {"password": "newpassword123", "confirm_password": "notthesamepassword"}
-        response = self.client.put(f"{self.url}?code={reset_code}", data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
+        user = self.reset_password_and_get_user(reset_code, data, 400)
+
         self.assertFalse(user.check_password("newpassword123"))
 
         data = {"password": "", "confirm_password": ""}
-        response = self.client.put(f"{self.url}?code={reset_code}", data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
+        user = self.reset_password_and_get_user(reset_code, data, 400)
         self.assertFalse(user.check_password("newpassword123"))
 
         data = {"password": "password123", "confirm_password": ""}
-        response = self.client.put(f"{self.url}?code={reset_code}", data=data)
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
+        user = self.reset_password_and_get_user(reset_code, data, 400)
         self.assertFalse(user.check_password("newpassword123"))
 
-        response = self.client.put(f"{self.url}?code={reset_code}")
-        self.assertEqual(response.status_code, 400)
-        user = User.objects.get(email=self.user_data.email)
+        user = self.reset_password_and_get_user(reset_code, None, 400)
         self.assertFalse(user.check_password("newpassword123"))
 
-        response = self.client.put(f"{self.url}")
+        response = self.client.patch(f"{self.url}")
         self.assertEqual(response.status_code, 400)
 
-        response = self.client.put(f"{self.url}?code=invalidcode")
+        response = self.client.patch(f"{self.url}?code=invalidcode")
         self.assertEqual(response.status_code, 400)

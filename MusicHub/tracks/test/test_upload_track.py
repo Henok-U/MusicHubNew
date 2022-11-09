@@ -1,10 +1,9 @@
 from os.path import join
+from unittest.mock import patch
 
 from ...config.settings import BASE_DIR
 from ...users.test.base_test import AuthorizedApiTestCase
 from ..models import Track
-from unittest.mock import patch
-
 
 
 class TestUploadFile(AuthorizedApiTestCase):
@@ -15,12 +14,11 @@ class TestUploadFile(AuthorizedApiTestCase):
     def load_file(self, filename, status_code):
         with open(f"{self.file_path}{filename}", "rb") as fp:
             response = self.client.post(
-                path=self.url, data={"track": fp, "public": False}
+                path=self.url, data={"file": fp, "is_public": False}
             )
 
             self.assertEqual(response.status_code, status_code)
             return response
-
 
     @patch("MusicHub.antivirusProvider.service.AntivirusScan.sent_request")
     def test_upload_file_success(self, mock_sent_request):
@@ -29,8 +27,7 @@ class TestUploadFile(AuthorizedApiTestCase):
         }
         response = self.load_file("test.mp3", 201)
         track = Track.objects.get(id=response.data.get("id"))
-        self.assertEqual(track.public, False)
-
+        self.assertEqual(track.is_public, False)
 
     def test_upload_wrong_file_format(self):
 

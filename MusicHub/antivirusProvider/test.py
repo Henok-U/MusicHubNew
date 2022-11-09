@@ -1,9 +1,10 @@
+from unittest.mock import patch
+
 from rest_framework.test import APITestCase
 
 from MusicHub.antivirusProvider.custom_exception import CustomAntiVirusException
 
 from .service import AntivirusScan
-from unittest.mock import patch
 
 FILE_MALICIOUS = "File is malicius or suspicious, cannot upload it"
 FILE_FAILED = "Failed to scan file, please try again later"

@@ -14,7 +14,7 @@ class TestUserRegistrationAPIView(AuthorizedApiTestCase):
 
     def load_upload_and_get_picture(self, filename, status_code):
         with open(f"{self.picture}{filename}", "rb") as fp:
-            response = self.client.patch(path=self.url, data={"picture": fp})
+            response = self.client.patch(path=self.url, data={"profile_avatar": fp})
 
             self.assertEqual(response.status_code, status_code)
             user = User.objects.get(email=self.user_data.email)
@@ -38,9 +38,5 @@ class TestUserRegistrationAPIView(AuthorizedApiTestCase):
 
     def test_add_picuture_no_body_arguments(self):
 
-        response = self.client.patch(path=self.url, data={"picture": ""})
-        self.assertEqual(response.status_code, 400)
-
-        self.load_upload_and_get_picture("testtt.jpg", 400)
-        response = self.client.patch(path=self.url)
+        response = self.client.patch(path=self.url, data={"profile_avatar": ""})
         self.assertEqual(response.status_code, 400)

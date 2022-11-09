@@ -1,9 +1,8 @@
-from django.core.validators import EmailValidator
 from rest_framework import serializers
 
 from ..main.utils import get_random_string, trim_spaces_from_data
 from .models import User
-from .profile_service import (
+from .validators import (
     validate_old_password,
     validate_passwords_match,
     validate_picture,
@@ -58,25 +57,26 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         max_length=100,
     )
 
+    class Meta:
+        model = User
+        fields = ["password", "confirm_password"]
+
     def validate(self, attrs):
         validate_passwords_match(attrs)
         return attrs
 
-    class Meta:
-        model = User
-        fields = ["password", "confirm_password"]
-        extra_kwargs = {
-            "password": {"write_only": True},
-            "confirm_password": {"write_only": True},
-        }
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data.get("password"))
+        instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        return {"message": "password changed successfully"}
 
 
-class ChangePasswordSerializer(serializers.ModelSerializer):
+class ChangePasswordSerializer(ResetPasswordSerializer):
 
     old_password = serializers.CharField(
-        max_length=100,
-    )
-    confirm_password = serializers.CharField(
         max_length=100,
     )
 
@@ -90,22 +90,11 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
         return attrs
 
-    def update(self, instance, validated_data):
-        instance.set_password(validated_data["password"])
-        instance.save()
-        return instance
-
 
 class ResetPasswordEmailSerializer(serializers.Serializer):
-
-    email = serializers.CharField(
-        max_length=256,
-        validators=[
-            EmailValidator(
-                code="Invalid email", message="Please provide valid email address"
-            )
-        ],
-    )
+    class Meta:
+        model = User
+        fields = ["email"]
 
 
 class SocialAuthSerializer(serializers.Serializer):
@@ -118,11 +107,11 @@ class AddChangePictureSerializer(serializers.ModelSerializer):
         fields = ["profile_avatar"]
 
     def validate(self, attrs):
-        validate_picture(attrs["profile_avatar"])
+        validate_picture(attrs.get("profile_avatar"))
         return attrs
 
     def save(self, **kwargs):
-        name = self.initial_data["profile_avatar"].name
+        name = self.initial_data.get("profile_avatar").name
         random = get_random_string(10)
         self.initial_data["profile_avatar"].name = f"{random}.{name.split('.')[-1]}"
         return super().save(**kwargs)

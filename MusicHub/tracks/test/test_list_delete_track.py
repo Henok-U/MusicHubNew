@@ -1,7 +1,6 @@
 from rest_framework import status
 
 from MusicHub.tracks.test.test_utils import delete_generated_files_testing_tracks
-
 from MusicHub.tracks.test.track_factory import TrackFactory
 from MusicHub.users.test.base_test import AuthorizedApiTestCase
 

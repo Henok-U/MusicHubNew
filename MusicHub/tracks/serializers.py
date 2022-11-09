@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
+from ..main.constants import FORMATED_DATE
 from ..main.utils import format_sec_to_mins
-from .constants import FORMATED_DATE
-from .track_service import get_track_length, validate_track
 from .models import Track
+from .track_service import get_track_length
+from .validators import validate_track
 
 
 class CreateTrackSerializer(ModelSerializer):
@@ -20,7 +21,7 @@ class CreateTrackSerializer(ModelSerializer):
         data["track_length"] = get_track_length(data.get("file"))
         return super().to_internal_value(data)
 
-    def validate_track(self, value):
+    def validate_file(self, value):
         validate_track(value)
         return value
 
